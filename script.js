@@ -220,3 +220,98 @@ arrange.addEventListener("click", ()=>{
 })
 
 
+
+function estranac(){
+    var textEstranac = document.getElementById("textEstranac")
+    var listItemsEstranac = document.querySelectorAll(".list")
+        for (let i = 0; i < listItemsEstranac.length; i++)
+            {var listItemValueEstranac = listItemsEstranac[i].querySelectorAll("td")
+                var lastNameEstranac = listItemValueEstranac[0].innerHTML.slice(0, listItemValueEstranac[0].innerHTML.indexOf(" "))
+                var firstNameEstranac = listItemValueEstranac[0].innerHTML.slice(listItemValueEstranac[0].innerHTML.indexOf(" "))
+                var countryEstranac = listItemValueEstranac[1].innerHTML
+                    if (countryEstranac=="Ruska federacija") {countryEstranac=944}
+                    if (countryEstranac=="Albanija") {countryEstranac=763}
+                    if (countryEstranac=="Kosovo") {countryEstranac=763}
+                    if (countryEstranac=="Alžir") {countryEstranac=764}
+                    if (countryEstranac=="Andora") {countryEstranac=766}
+                    if (countryEstranac=="Jermenija") {countryEstranac=772}
+                    if (countryEstranac=="Australija") {countryEstranac=774}
+                    if (countryEstranac=="Austrija") {countryEstranac=775}
+                    if (countryEstranac=="Azerbejdžan") {countryEstranac=776}
+                    if (countryEstranac=="Bahrein") {countryEstranac=778}
+                    if (countryEstranac=="Bangladeš") {countryEstranac=779}
+                    if (countryEstranac=="Barbados") {countryEstranac=780}
+                    if (countryEstranac=="Bjelorusija") {countryEstranac=781}
+                    if (countryEstranac=="Belgija") {countryEstranac=782}
+                    if (countryEstranac=="Butan") {countryEstranac=786}
+                    if (countryEstranac=="Kanada") {countryEstranac=800}
+                    if (countryEstranac=="Kina") {countryEstranac=805}
+                    if (countryEstranac=="Hrvatska") {countryEstranac=815}
+                    if (countryEstranac=="Njemačka") {countryEstranac=842}
+                    if (countryEstranac=="Litva") {countryEstranac=888}
+                    if (countryEstranac=="Maroko") {countryEstranac=910}
+                    if (countryEstranac=="Pakistan") {countryEstranac=929}
+                    if (countryEstranac=="Portugal") {countryEstranac=939}
+                    if (countryEstranac=="Saudijska arabija") {countryEstranac=956}
+                    if (countryEstranac=="Srbija") {countryEstranac=958}
+                    if (countryEstranac=="Slovenija") {countryEstranac=964}
+                    if (countryEstranac=="Sjedinjene američke države") {countryEstranac=996}
+                    if (countryEstranac=="Velika britanija") {countryEstranac=1010}
+
+                    
+
+                
+
+                var documentTypeEstranac = listItemValueEstranac[2].innerHTML.slice(0, listItemValueEstranac[2].innerHTML.indexOf(":"))
+                if (documentTypeEstranac == "P" || documentTypeEstranac == "DP" ) {documentTypeEstranac = 1}
+                 else if (documentTypeEstranac == "LK") {documentTypeEstranac = 2}
+                  else {documentTypeEstranac = 1003}
+                var documentEstranac = listItemValueEstranac[2].innerHTML.slice(listItemValueEstranac[2].innerHTML.indexOf(" ")+1)
+                var dateOfBirthEstranac = listItemValueEstranac[3].innerHTML
+                var genderEstranac = listItemValueEstranac[4].innerHTML
+                if (genderEstranac == "M") {genderEstranac = 1}
+                 else {genderEstranac = 2 }
+                var dateEstranac = document.getElementById("dateInput")
+                var dateEstranacValue = dateEstranac.value
+                 console.log(countryEstranac)
+                var newDiv = document.createElement("div")
+                var brakeLine = document.createElement("br")
+                textEstranac.appendChild(newDiv)
+
+                 newDiv.innerHTML += `fetch("https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen", {
+                    "headers": {
+                      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                      "accept-language": "hr-HR,hr;q=0.9,en-US;q=0.8,en;q=0.7",
+                      "cache-control": "max-age=0",
+                      "content-type": "application/x-www-form-urlencoded",
+                      "priority": "u=0, i",
+                      "sec-ch-ua": "\\"Chromium\\";v=\\"124\\", \\"Google Chrome\\";v=\\"124\\", \\"Not-A.Brand\\";v=\\"99\\"",
+                      "sec-ch-ua-mobile": "?0",
+                      "sec-ch-ua-platform": "\\"Windows\\"",
+                      "sec-fetch-dest": "document",
+                      "sec-fetch-mode": "navigate",
+                      "sec-fetch-site": "same-origin",
+                      "sec-fetch-user": "?1",
+                      "upgrade-insecure-requests": "1"
+                    },
+                    "referrer": "https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen",
+                    "referrerPolicy": "strict-origin-when-cross-origin",
+                    "body": "FirstName=${firstNameEstranac}&LastName=${lastNameEstranac}&FKGenderID=${genderEstranac}&DateOfBirth=${dateOfBirthEstranac}&FKStateOfBirthID=&PlaceOfBirth=&FKCitizenshipID=${countryEstranac}&CheckedInDate=${dateEstranacValue}&FKTravelDocumentsTypeID=${documentTypeEstranac}&TravelDocumentNumber=${documentEstranac}&TravelDocumentExpiryDate=&Publisher=&FKVisaTypeID=&VisaNumber=&VisaExpiryDate=&EntryDate=&autocomplete-places=&FKEntryPlaceID=&PhoneNumber=&Email=&Note=",
+                    "method": "POST",
+                    "mode": "cors",
+                    "credentials": "include"
+                  });
+
+                  `
+                  textEstranac.appendChild(brakeLine)
+                  textEstranac.appendChild(brakeLine)
+                    
+            }
+}
+
+
+
+
+
+
+
