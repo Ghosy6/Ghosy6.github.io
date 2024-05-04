@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+	<style>
+		.estranacHighlight {
+		  color: rgb(255, 0, 0);
+		  font-size: 140%;
+		}
+		
+		</style>
 </head>
 <body>
     <div class="container">
@@ -22,7 +29,7 @@
 		<button id="arrange" class="btn btn-primary m-2">Convert</button>
 		<button class="btn btn-primary m-2" onclick="ExportToExcel('xlsx')">Boravišna taksa</button>
 		<button class="btn btn-primary m-2" onclick="estranac()">Estranac</button>
-		<input type="text" id="dateInput">
+		<input  type="text" id="dateInput">
 		<table id="tbl_exporttable_to_xls" >
 			
 			<tbody id="newList">

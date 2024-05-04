@@ -213,13 +213,112 @@ excel_file.addEventListener('change', (event) => {
     }
 
 });
+var countryMap = {
+    "Ruska federacija":             944,
+    "Albanija":                     763,
+    "Kosovo":                       763,
+    "Alžir":                        764,
+    "Andora":                       766,
+    "Jermenija":                    772,
+    "Australija":                   774,
+    "Austrija":                     775,
+    "Azerbejdžan":                  776,
+    "Bahrein":                      778,
+    "Bangladeš":                    779,
+    "Barbados":                     780,
+    "Bjelorusija":                  781,
+    "Belgija":                      782,
+    "Butan":                        786,
+    "Bolivija":                     787,
+    "Bocvana":                      789,
+    "Brazil":                       791,
+    "Bugarska":                     794,
+    "Burkina faso":                 795,
+    "Kamerun":                      799,
+    "Kanada":                       800,
+    "Čile":                         804,
+    "Kina":                         805,
+    "Kolumbija":                    808,
+    "Kongo":                        810,
+    "Kostarika":                    813,
+    "Obala slonovače":              814,
+    "Hrvatska":                     815,
+    "Kuba":                         816,
+    "Cipar":                        818,
+    "Češka republika":              819,
+    "Danska":                       820,
+    "Dominika":                     822,
+    "Dominikanska Republika":       823,
+    "Ekvador":                      824,
+    "Egipat":                       825,
+    "Salvador":                     826,
+    "Estonija":                     829,
+    "Etiopija":                     830,
+    "Fidži":                        833,
+    "Finska":                       834,
+    "Francuska":                    835,
+    "Gabon":                        839,
+    "Gruzija":                      841,
+    "Njemačka":                     842,
+    "Gana":                         843,
+    "Gibraltar":                    844,
+    "Grčka":                        845,
+    "Grenland":                     846,
+    "Grenada":                      847,
+    "Gvatemala":                    850,
+    "Gvineja":                      852,
+    "Haiti":                        855,
+    "Vatikan":                      857,
+    "Honduras":                     858,
+    "Hong kong":                    859,
+    "Mađarska":                     860,
+    "Island":                       861,
+    "Indija":                       862,
+    "Indonezija":                   863,
+    "Iran":                         864,
+    "Irak":                         865,
+    "Irska":                        866,
+    "Izrael":                       868,
+    "Italija":                      869,
+    "Japan":                        871,
+    "Jordan":                       873,
+    "Kazahstan":                    874,
+    "Kenija":                       875,
+    "Koreja - južna":               878,
+    "Kirgistan":                    880,
+    "Laos":                         881,
+    "Letonija":                     882,
+    "Libanon":                      883,
+    "Libija":                       886,
+    "Lihtenštajn":                  887,
+    "Litva":                        888,
+    "Luksemburg":                   889,
+    "Makedonija":                   891,
+    "Malezija":                     894,
+    "Maroko":                       910,
+    "Pakistan":                     929,
+    "Portugal":                     939,
+    "Saudijska arabija":            956,
+    "Srbija":                       958,
+    "Slovenija":                    964,
+    "Sjedinjene američke države":   996,
+    "Velika britanija":             1010,
 
+}
 
 arrange.addEventListener("click", ()=>{
     rearrange()
 })
 
-
+var dateEstranac = document.getElementById("dateInput")
+var currentDate = new Date();
+var day = currentDate.getDate()
+if ( day < 10 ){ day = '0' + day}
+var month = currentDate.getMonth() + 1
+if ( month < 10 ){ month = '0' + month}
+var year = currentDate.getFullYear()
+var currentDateOutput = day + "." +  month + "." + year + "."
+dateEstranac.value = currentDateOutput
 
 function estranac(){
     var textEstranac = document.getElementById("textEstranac")
@@ -228,38 +327,10 @@ function estranac(){
             {var listItemValueEstranac = listItemsEstranac[i].querySelectorAll("td")
                 var lastNameEstranac = listItemValueEstranac[0].innerHTML.slice(0, listItemValueEstranac[0].innerHTML.indexOf(" "))
                 var firstNameEstranac = listItemValueEstranac[0].innerHTML.slice(listItemValueEstranac[0].innerHTML.indexOf(" "))
-                var countryEstranac = listItemValueEstranac[1].innerHTML
-                    if (countryEstranac=="Ruska federacija") {countryEstranac=944}
-                    if (countryEstranac=="Albanija") {countryEstranac=763}
-                    if (countryEstranac=="Kosovo") {countryEstranac=763}
-                    if (countryEstranac=="Alžir") {countryEstranac=764}
-                    if (countryEstranac=="Andora") {countryEstranac=766}
-                    if (countryEstranac=="Jermenija") {countryEstranac=772}
-                    if (countryEstranac=="Australija") {countryEstranac=774}
-                    if (countryEstranac=="Austrija") {countryEstranac=775}
-                    if (countryEstranac=="Azerbejdžan") {countryEstranac=776}
-                    if (countryEstranac=="Bahrein") {countryEstranac=778}
-                    if (countryEstranac=="Bangladeš") {countryEstranac=779}
-                    if (countryEstranac=="Barbados") {countryEstranac=780}
-                    if (countryEstranac=="Bjelorusija") {countryEstranac=781}
-                    if (countryEstranac=="Belgija") {countryEstranac=782}
-                    if (countryEstranac=="Butan") {countryEstranac=786}
-                    if (countryEstranac=="Kanada") {countryEstranac=800}
-                    if (countryEstranac=="Kina") {countryEstranac=805}
-                    if (countryEstranac=="Hrvatska") {countryEstranac=815}
-                    if (countryEstranac=="Njemačka") {countryEstranac=842}
-                    if (countryEstranac=="Litva") {countryEstranac=888}
-                    if (countryEstranac=="Maroko") {countryEstranac=910}
-                    if (countryEstranac=="Pakistan") {countryEstranac=929}
-                    if (countryEstranac=="Portugal") {countryEstranac=939}
-                    if (countryEstranac=="Saudijska arabija") {countryEstranac=956}
-                    if (countryEstranac=="Srbija") {countryEstranac=958}
-                    if (countryEstranac=="Slovenija") {countryEstranac=964}
-                    if (countryEstranac=="Sjedinjene američke države") {countryEstranac=996}
-                    if (countryEstranac=="Velika britanija") {countryEstranac=1010}
-
-                    
-
+                
+                var countryEstranac = countryMap[listItemValueEstranac[1].innerHTML]
+                if (!Number.isInteger(countryEstranac)) {alert(`Code will not work, ${listItemValueEstranac[1].innerHTML}`)}
+                console.log(countryEstranac)
                 
 
                 var documentTypeEstranac = listItemValueEstranac[2].innerHTML.slice(0, listItemValueEstranac[2].innerHTML.indexOf(":"))
@@ -271,14 +342,51 @@ function estranac(){
                 var genderEstranac = listItemValueEstranac[4].innerHTML
                 if (genderEstranac == "M") {genderEstranac = 1}
                  else {genderEstranac = 2 }
-                var dateEstranac = document.getElementById("dateInput")
                 var dateEstranacValue = dateEstranac.value
-                 console.log(countryEstranac)
-                var newDiv = document.createElement("div")
+                var newDiv1 = document.createElement("div")
+                var newDiv2 = document.createElement("div")
+                var newDiv3 = document.createElement("div")
+                var newSpan1 = document.createElement("span")
+                var newSpan2 = document.createElement("span")
+                var newSpan3 = document.createElement("span")
+                var newSpan4 = document.createElement("span")
+                var newSpan5 = document.createElement("span")
+                var newSpan6 = document.createElement("span")
+                var newSpan7 = document.createElement("span")
+                var newSpan8 = document.createElement("span")
+                var newSpan9 = document.createElement("span")
+                var newSpan10 = document.createElement("span")
+                var newSpan11 = document.createElement("span")
+                var newSpan12 = document.createElement("span")
+                var newSpan13 = document.createElement("span")
+                var newSpan14 = document.createElement("span")
+                var newSpan15 = document.createElement("span")
+                var newSpan16 = document.createElement("span")
+                var newSpan17 = document.createElement("span")
+                
                 var brakeLine = document.createElement("br")
-                textEstranac.appendChild(newDiv)
-
-                 newDiv.innerHTML += `fetch("https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen", {
+                textEstranac.appendChild(newDiv1)
+                textEstranac.appendChild(newDiv2)
+                textEstranac.appendChild(newDiv3)
+                newDiv2.appendChild(newSpan1)
+                newDiv2.appendChild(newSpan2)
+                newDiv2.appendChild(newSpan3)
+                newDiv2.appendChild(newSpan4)
+                newDiv2.appendChild(newSpan5)
+                newDiv2.appendChild(newSpan6)
+                newDiv2.appendChild(newSpan7)
+                newDiv2.appendChild(newSpan8)
+                newDiv2.appendChild(newSpan9)
+                newDiv2.appendChild(newSpan10)
+                newDiv2.appendChild(newSpan11)
+                newDiv2.appendChild(newSpan12)
+                newDiv2.appendChild(newSpan13)
+                newDiv2.appendChild(newSpan14)
+                newDiv2.appendChild(newSpan15)
+                newDiv2.appendChild(newSpan16)
+                newDiv2.appendChild(newSpan17)
+                
+                    newDiv1.innerHTML = `fetch("https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen", {
                     "headers": {
                       "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
                       "accept-language": "hr-HR,hr;q=0.9,en-US;q=0.8,en;q=0.7",
@@ -295,18 +403,42 @@ function estranac(){
                       "upgrade-insecure-requests": "1"
                     },
                     "referrer": "https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen",
-                    "referrerPolicy": "strict-origin-when-cross-origin",
-                    "body": "FirstName=${firstNameEstranac}&LastName=${lastNameEstranac}&FKGenderID=${genderEstranac}&DateOfBirth=${dateOfBirthEstranac}&FKStateOfBirthID=&PlaceOfBirth=&FKCitizenshipID=${countryEstranac}&CheckedInDate=${dateEstranacValue}&FKTravelDocumentsTypeID=${documentTypeEstranac}&TravelDocumentNumber=${documentEstranac}&TravelDocumentExpiryDate=&Publisher=&FKVisaTypeID=&VisaNumber=&VisaExpiryDate=&EntryDate=&autocomplete-places=&FKEntryPlaceID=&PhoneNumber=&Email=&Note=",
-                    "method": "POST",
-                    "mode": "cors",
-                    "credentials": "include"
-                  });
+                    "referrerPolicy": "strict-origin-when-cross-origin", `
+                  
+                  newDiv3.innerHTML = ` "method": "POST","mode": "cors","credentials": "include"});`
+                  
+                  newSpan1.innerHTML=`"body": "FirstName=`
+                  newSpan2.innerHTML=`${firstNameEstranac}`
+                  newSpan3.innerHTML=`&LastName=`
+                  newSpan4.innerHTML=`${lastNameEstranac}`
+                  newSpan5.innerHTML=`&FKGenderID=`
+                  newSpan6.innerHTML=`${genderEstranac}`
+                  newSpan7.innerHTML=`&DateOfBirth=`
+                  newSpan8.innerHTML=`${dateOfBirthEstranac}`
+                  newSpan9.innerHTML=`&FKStateOfBirthID=&PlaceOfBirth=&FKCitizenshipID=`
+                  newSpan10.innerHTML=`${countryEstranac}`
+                  newSpan11.innerHTML=`&CheckedInDate=`
+                  newSpan12.innerHTML=`${dateEstranacValue}`
+                  newSpan13.innerHTML=`&FKTravelDocumentsTypeID=`
+                  newSpan14.innerHTML=`${documentTypeEstranac}`
+                  newSpan15.innerHTML=`&TravelDocumentNumber=`
+                  newSpan16.innerHTML=`${documentEstranac}`
+                  newSpan17.innerHTML=`&TravelDocumentExpiryDate=&Publisher=&FKVisaTypeID=&VisaNumber=&VisaExpiryDate=&EntryDate=&autocomplete-places=&FKEntryPlaceID=&PhoneNumber=&Email=&Note=",`
+                    
+                   newSpan2.classList.add('estranacHighlight')
+                   newSpan4.classList.add('estranacHighlight')
+                   newSpan6.classList.add('estranacHighlight')
+                   newSpan8.classList.add('estranacHighlight')
+                   newSpan10.classList.add('estranacHighlight')
+                   newSpan12.classList.add('estranacHighlight')
+                   newSpan14.classList.add('estranacHighlight')
+                   newSpan16.classList.add('estranacHighlight')
 
-                  `
                   textEstranac.appendChild(brakeLine)
                   textEstranac.appendChild(brakeLine)
                     
             }
+            if (currentDateOutput != dateEstranacValue ) {alert('Datum nije jednak trenutnom')}
 }
 
 
@@ -315,3 +447,8 @@ function estranac(){
 
 
 
+// var country = cell[5].textContent
+//country = country.toLowerCase()
+//country = country.charAt(0).toUpperCase() + country.slice(1) 
+
+//var country = "Bosna i Hercegovina"
