@@ -40,6 +40,8 @@ function rearrange() {
             newListCell.style.padding="3px"
             newListRow.appendChild(newListCell)
             newListCell.textContent= name
+            
+            
     
             var newListCell = document.createElement("td")
             newListCell.style.padding="3px"
@@ -87,6 +89,7 @@ function rearrange() {
             newListCell.style.padding="3px"
             newListRow.appendChild(newListCell)
             newListCell.textContent= name
+            
     
             var newListCell = document.createElement("td")
             newListCell.style.padding="3px"
@@ -129,6 +132,7 @@ function rearrange() {
             arr.sort()
             list.forEach(element => {
                 element.innerHTML=arr[i]
+                element.innerHTML = element.innerHTML.replace(/(\r\n|\n|\r)/gm, " ");
                 i++
                 
             });
@@ -297,10 +301,14 @@ var countryMap = {
     "Malezija":                     894,
     "Maroko":                       910,
     "Pakistan":                     929,
+    "Poljska":                      938,
     "Portugal":                     939,
     "Saudijska arabija":            956,
     "Srbija":                       958,
     "Slovenija":                    964,
+    "Španjolska":                   970,
+    "Švedska":                      976,
+    "Turska":                       989,
     "Sjedinjene američke države":   996,
     "Velika britanija":             1010,
 
@@ -327,10 +335,11 @@ function estranac(){
             {var listItemValueEstranac = listItemsEstranac[i].querySelectorAll("td")
                 var lastNameEstranac = listItemValueEstranac[0].innerHTML.slice(0, listItemValueEstranac[0].innerHTML.indexOf(" "))
                 var firstNameEstranac = listItemValueEstranac[0].innerHTML.slice(listItemValueEstranac[0].innerHTML.indexOf(" "))
+               
                 
                 var countryEstranac = countryMap[listItemValueEstranac[1].innerHTML]
                 if (!Number.isInteger(countryEstranac)) {alert(`Code will not work, ${listItemValueEstranac[1].innerHTML}`)}
-                console.log(countryEstranac)
+                
                 
 
                 var documentTypeEstranac = listItemValueEstranac[2].innerHTML.slice(0, listItemValueEstranac[2].innerHTML.indexOf(":"))
@@ -386,7 +395,7 @@ function estranac(){
                 newDiv2.appendChild(newSpan16)
                 newDiv2.appendChild(newSpan17)
                 
-                    newDiv1.innerHTML = `fetch("https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen", {
+                    newDiv1.innerHTML = `await fetch("https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen", {
                     "headers": {
                       "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
                       "accept-language": "hr-HR,hr;q=0.9,en-US;q=0.8,en;q=0.7",
@@ -447,8 +456,3 @@ function estranac(){
 
 
 
-// var country = cell[5].textContent
-//country = country.toLowerCase()
-//country = country.charAt(0).toUpperCase() + country.slice(1) 
-
-//var country = "Bosna i Hercegovina"
