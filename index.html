@@ -8,9 +8,14 @@
 
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
 	<style>
+		.panel{
+			font-size: 9px;
+			padding: 20px;
+			
+		}
 		.estranacHighlight {
 		  color: rgb(255, 0, 0);
-		  font-size: 140%;
+		  font-size: 25px;
 		}
 		
 		</style>
@@ -39,7 +44,11 @@
 		
         <div id="excel_data" class="mt-5"></div>
     </div>
-	<div  name="Estranac" id="textEstranac"></div>
+	<div class="panel" style="display: none;">
+		<span>async function prijaviGoste(){</span>
+			<div  name="Estranac" id="textEstranac"></div>
+	    <span>} prijaviGoste()</span>
+	  </div>
 
     <script src="script.js"></script>
 	

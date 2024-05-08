@@ -1,147 +1,18 @@
 const excel_file = document.getElementById('excel_file');
 const arrange = document.getElementById('arrange')
+var rearrangeListByRoom = document.getElementById("excel_data")
 const newList = document.getElementById('newList')
-var z = 0
+var textEstranac = document.getElementById("textEstranac")
+var dateEstranac = document.getElementById("dateInput")
+var currentDate = new Date();
+var day = currentDate.getDate()
+if ( day < 10 ){ day = '0' + day}
+var month = currentDate.getMonth() + 1
 
-function rearrange() {
-    
-        var rows = document.querySelectorAll('tr')
-        
-        
-         for (var n=0; n<rows.length; n++)
-         {  
-            var cell = rows[n].querySelectorAll('td')
-            if (cell[3])
-            {if (cell[3].textContent == "M" || cell[3].textContent == "F"){
-            var room = cell[1].textContent
-            var name = cell[2].textContent
-            var gender = cell[3].textContent
-            if (gender == "F"){gender = "Ž"}
-            var country = cell[4].textContent
-            country = country.toLowerCase()
-            country = country.charAt(0).toUpperCase() + country.slice(1)
-            var age = cell[5].textContent   
-            age = age.substring(0, age.indexOf(","));
-            var passport = cell[6].textContent
-            var firstTwo = passport.slice(0,2)
-            if (firstTwo == "2 " ) {passport = "P:" + passport.slice(2)}
-            if (firstTwo == "27" ) {passport = "LK:" + passport.slice(2)}
-            if (firstTwo == "6 " ) {passport = "DP:" + passport.slice(2)}
-            if (firstTwo == "32" ) {passport = "VD:" + passport.slice(2)}
-            
-    
-            
-            var newListRow = document.createElement("tr")
-            newListRow.classList.add("list")
-            newListRow.setAttribute('id',room);
-            newList.appendChild(newListRow)
-    
-            var newListCell = document.createElement("td")
-            newListCell.style.padding="3px"
-            newListRow.appendChild(newListCell)
-            newListCell.textContent= name
-            
-            
-    
-            var newListCell = document.createElement("td")
-            newListCell.style.padding="3px"
-            newListRow.appendChild(newListCell)
-            newListCell.textContent= country
-    
-            var newListCell = document.createElement("td")
-            newListCell.style.padding="3px"
-            newListRow.appendChild(newListCell)
-            newListCell.textContent= passport
-    
-            var newListCell = document.createElement("td")
-            newListCell.style.padding="3px"
-            newListRow.appendChild(newListCell)
-            newListCell.textContent= age
-    
-            
-            var newListCell = document.createElement("td")
-            newListCell.style.padding="3px"
-            newListRow.appendChild(newListCell)
-            newListCell.textContent= gender
-            if (newListCell.textContent=="Ž") {newListCell.style.color="red"}
-           
-            }
-        else if (cell[4].textContent == "M" || cell[4].textContent == "F"){
-            var room = cell[1].textContent
-            var name = cell[2].textContent
-            var gender = cell[4].textContent
-            if (gender == "F"){gender = "Ž"}
-            var country = "Bosna i Hercegovina"
-            var age = cell[5].textContent   
-            age = age.substring(0, age.indexOf(","));
-            var passport = cell[6].textContent
-            passport = passport.substring(0, passport.indexOf(","))
-            
-            
-    
-            
-            var newListRow = document.createElement("tr")
-            newListRow.classList.add("list")
-            newListRow.setAttribute('id',room);
-            newList.appendChild(newListRow)
-    
-            var newListCell = document.createElement("td")
-            newListCell.style.padding="3px"
-            newListRow.appendChild(newListCell)
-            newListCell.textContent= name
-            
-    
-            var newListCell = document.createElement("td")
-            newListCell.style.padding="3px"
-            newListRow.appendChild(newListCell)
-            newListCell.textContent= country
-    
-            var newListCell = document.createElement("td")
-            newListCell.style.padding="3px"
-            newListRow.appendChild(newListCell)
-            newListCell.textContent= passport
-    
-            var newListCell = document.createElement("td")
-            newListCell.style.padding="3px"
-            newListRow.appendChild(newListCell)
-            newListCell.textContent= age
-    
-            
-            var newListCell = document.createElement("td")
-            newListCell.style.padding="3px"
-            newListRow.appendChild(newListCell)
-            newListCell.textContent= gender
-            if (newListCell.textContent=="Ž") {newListCell.style.color="red"}
-        }
-        }
-            
-            
-            
-    
-            
-          }
-        var list = document.querySelectorAll(".list")
-    
-            var arr = []
-            i=0
-            list.forEach(listItem=>{
-                arr.push(listItem.outerHTML)
-                }
-            )
-    
-            arr.sort()
-            list.forEach(element => {
-                element.innerHTML=arr[i]
-                element.innerHTML = element.innerHTML.replace(/(\r\n|\n|\r)/gm, " ");
-                i++
-                
-            });
-         rows.forEach(row=>{
-            if (row.id!="list") {row.outerHTML=""}
-         })
-    
-
-}
+if ( month < 10 ){ month = '0' + month}
+var year = currentDate.getFullYear()
+var currentDateOutput = day + "." +  month + "." + year + "."
+dateEstranac.value = currentDateOutput
 
 function ExportToExcel(type, fn, dl) {
     var elt = document.getElementById('tbl_exporttable_to_xls');
@@ -217,6 +88,7 @@ excel_file.addEventListener('change', (event) => {
     }
 
 });
+
 var countryMap = {
     "Ruska federacija":             944,
     "Albanija":                     763,
@@ -298,161 +170,237 @@ var countryMap = {
     "Litva":                        888,
     "Luksemburg":                   889,
     "Makedonija":                   891,
-    "Malezija":                     894,
+    "Maldivi":                      895,
+    "Mali":                         896,
+    "Malta":                        897,
+    "Meksiko":                      903,
+    "Moldavija":                    905,
+    "Monako":                       906,
+    "Crna gora":                    908,
     "Maroko":                       910,
+    "Nizozemska":                   916,
+    "Novi zeland":                  920,
+    "Nikaragva":                    921,
+    "Niger":                        922,
+    "Nigerija":                     923,
+    "Norveška":                     927,
+    "Oman":                         928,
     "Pakistan":                     929,
+    "Palestina":                    931,
+    "Paragvaj":                     934,
+    "Peru":                         935,
+    "Filipini":                     936,
     "Poljska":                      938,
     "Portugal":                     939,
+    "Katar":                        941,
+    "Ruska federacija":             944,
+    "Rumunjska":                    943,
     "Saudijska arabija":            956,
     "Srbija":                       958,
+    "Singapur":                     961,
+    "Slovačka":                     963,
     "Slovenija":                    964,
     "Španjolska":                   970,
+    "Šri lanka":                    971,
     "Švedska":                      976,
+    "Švicarska":                    977,
+    "Sirija":                       978,
+    "Tajvan":                       979,
+    "Tajland":                      982,
+    "Tunis":                        988,
     "Turska":                       989,
+    "Ukrajina":                     994,
+    "Ujed. arapski emirati":        995,
     "Sjedinjene američke države":   996,
+    "Urugvaj":                      998,
+    "Venecuela":                    1001,
+    "Vijetnam":                     1002,
+    "Jemen":                        1007,
+    "Zambija":                      1008,
+    "Zimbabve":                     1009,
     "Velika britanija":             1010,
 
 }
+
+
+function resortAll() {
+    var rows = document.querySelectorAll('tr')
+    var array = []
+
+      for (var n=0; n<rows.length; n++){   
+        var cell = rows[n].querySelectorAll('th, td')
+        var room = cell[1].textContent
+        rows[n].setAttribute("id", room)
+        array.push(rows[n].outerHTML)
+      }
+      array.sort()
+      rearrangeListByRoom.innerHTML== " "
+      rearrangeListByRoom.innerHTML= "<table class='table table-striped table-bordered'><tbody id='resorted'><tbody></table>"
+    
+      
+      for (let j = 0; j < array.length; j++)
+        {  document.getElementById("resorted").innerHTML+= array[j]  }
+}
+
+
+
+function rearrange() {
+        resortAll()
+    
+        var rows = document.querySelectorAll('tr')
+        
+        
+         for (var n=0; n<rows.length; n++)
+         {  
+            var cell = rows[n].querySelectorAll('th, td')
+
+                var room = cell[1].textContent
+                var lastName = cell[2].textContent
+                var firstName = cell[3].textContent
+                var gender = cell[4].textContent
+                if (gender == "F"){gender = "Ž"}
+                var country = cell[5].textContent
+                country = country.toLowerCase()
+                country = country.charAt(0).toUpperCase() + country.slice(1)
+                var age = cell[6].textContent  
+                var passport = cell[7].textContent
+                var firstTwo = passport.slice(0,2)
+                if (firstTwo == "2 " ) {passport = "P:" + passport.slice(2)}
+                if (firstTwo == "27" ) {passport = "LK:" + passport.slice(2)}
+                if (firstTwo == "6 " ) {passport = "DP:" + passport.slice(2)}
+                if (firstTwo == "32" ) {passport = "VD:" + passport.slice(2)} 
+
+             if (cell[5].textContent[0] + 1 > 0)
+               
+               {country = "Bosna i Hercegovina"
+                age = cell[5].textContent
+                passport = cell[6].textContent      
+                passport = passport.substring(0, passport.indexOf(","))}
+               
+                age = age.substring(0, age.indexOf(",")) + ".";
+          
+            
+            var newListRow = document.createElement("tr")
+            newListRow.classList.add("list")
+            newListRow.setAttribute('id',room);
+            newList.appendChild(newListRow)
+          
+            var newListCell = document.createElement("td")
+            newListCell.style.padding="4px"
+            newListRow.appendChild(newListCell)
+            newListCell.textContent= lastName + firstName
+            
+            
+          
+            var newListCell = document.createElement("td")
+            newListCell.style.padding="4px"
+            newListRow.appendChild(newListCell)
+            newListCell.textContent= country
+          
+            var newListCell = document.createElement("td")
+            newListCell.style.padding="4px"
+            newListRow.appendChild(newListCell)
+            newListCell.textContent= passport
+          
+            var newListCell = document.createElement("td")
+            newListCell.style.padding="4px"
+            newListRow.appendChild(newListCell)
+            newListCell.textContent= age
+          
+            
+            var newListCell = document.createElement("td")
+            newListCell.style.padding="4px"
+            newListRow.appendChild(newListCell)
+            newListCell.textContent= gender
+            if (newListCell.textContent=="Ž") {newListCell.style.color="red"}   
+            
+             
+          var estranacNewDiv = document.createElement('div')
+          estranacNewDiv.setAttribute("id", n)
+          textEstranac.appendChild(estranacNewDiv)
+
+          var firstNameEstranac = firstName.trim()
+          var lastNameEstranac = lastName.trim()
+          var genderEstranac = gender
+          if (genderEstranac == "M") {genderEstranac = 1}
+           else {genderEstranac = 2 }
+          var passportEstranac = passport.slice(passport.lastIndexOf(" ")).trim()
+          var documentTypeEstranac = passport.slice(0, passport.indexOf(":")).trim()
+          if (documentTypeEstranac == "P" || documentTypeEstranac == "DP" ) {documentTypeEstranac = 1}
+                else if (documentTypeEstranac == "LK") {documentTypeEstranac = 2}
+                 else {documentTypeEstranac = 1003}
+          var countryEstranac = countryMap[country]
+                   if (!Number.isInteger(countryEstranac)) {alert(`ESTRANAC se neće moći prijaviti, ${country}`)}
+          var dateEstranacValue = dateEstranac.value      
+      
+            estranacNewDiv.innerHTML = 
+            `<div> await fetch("https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen", {
+                "headers": {
+                  "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                  "accept-language": "hr-HR,hr;q=0.9,en-US;q=0.8,en;q=0.7",
+                  "cache-control": "max-age=0",
+                  "content-type": "application/x-www-form-urlencoded",
+                  "priority": "u=0, i",
+                  "sec-ch-ua": "\\"Chromium\\";v=\\"124\\", \\"Google Chrome\\";v=\\"124\\", \\"Not-A.Brand\\";v=\\"99\\"",
+                  "sec-ch-ua-mobile": "?0",
+                  "sec-ch-ua-platform": "\\"Windows\\"",
+                  "sec-fetch-dest": "document",
+                  "sec-fetch-mode": "navigate",
+                  "sec-fetch-site": "same-origin",
+                  "sec-fetch-user": "?1",
+                  "upgrade-insecure-requests": "1"
+                },
+                "referrer": "https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen",
+                "referrerPolicy": "strict-origin-when-cross-origin",
+                <span>"body": "FirstName=</span><span class='estranacHighlight'>${firstNameEstranac}</span>
+                <span>&LastName=</span><span class='estranacHighlight' >${lastNameEstranac}</span>
+                <span>&FKGenderID=</span><span class='estranacHighlight' >${genderEstranac}</span><span>&DateOfBirth=</span>
+                <span class='estranacHighlight' >${age}</span>
+                <span>&FKStateOfBirthID=&PlaceOfBirth=&FKCitizenshipID=</span>
+                <span class='estranacHighlight' >${countryEstranac}</span>
+                <span>&CheckedInDate=</span><span class='estranacHighlight'>${dateEstranacValue}</span>
+                <span>&FKTravelDocumentsTypeID=</span><span class='estranacHighlight' >${documentTypeEstranac}</span>
+                <span>&TravelDocumentNumber=</span><span class='estranacHighlight'>${passportEstranac}</span>
+                <span>&TravelDocumentExpiryDate=&Publisher=&FKVisaTypeID=&VisaNumber=&VisaExpiryDate=&EntryDate=&autocomplete-places=&FKEntryPlaceID=&PhoneNumber=&Email=&Note=",</span>
+                <div>"method": "POST","mode": "cors","credentials": "include"});</div><br><br>
+                `
+               
+}       
+        if (currentDateOutput != dateEstranacValue ) {alert('Datum nije jednak trenutnom vremenu ali kod je ispravan')}
+        var list = document.querySelectorAll(".list")
+        var arr = []
+            
+            i=0
+            list.forEach(listItem=>{
+                arr.push(listItem.outerHTML)
+                }
+            )
+    
+
+            list.forEach(element => {
+                element.innerHTML=arr[i]
+                element.innerHTML = element.innerHTML.replace(/(\r\n|\n|\r)/gm, " ");
+                i++
+                
+            });
+         rows.forEach(row=>{
+            if (row.id!="list") {row.outerHTML=""}
+         })
+    
+
+}
+
 
 arrange.addEventListener("click", ()=>{
     rearrange()
 })
 
-var dateEstranac = document.getElementById("dateInput")
-var currentDate = new Date();
-var day = currentDate.getDate()
-if ( day < 10 ){ day = '0' + day}
-var month = currentDate.getMonth() + 1
-if ( month < 10 ){ month = '0' + month}
-var year = currentDate.getFullYear()
-var currentDateOutput = day + "." +  month + "." + year + "."
-dateEstranac.value = currentDateOutput
 
-function estranac(){
-    var textEstranac = document.getElementById("textEstranac")
-    var listItemsEstranac = document.querySelectorAll(".list")
-        for (let i = 0; i < listItemsEstranac.length; i++)
-            {var listItemValueEstranac = listItemsEstranac[i].querySelectorAll("td")
-                var lastNameEstranac = listItemValueEstranac[0].innerHTML.slice(0, listItemValueEstranac[0].innerHTML.indexOf(" "))
-                var firstNameEstranac = listItemValueEstranac[0].innerHTML.slice(listItemValueEstranac[0].innerHTML.indexOf(" "))
-               
-                
-                var countryEstranac = countryMap[listItemValueEstranac[1].innerHTML]
-                if (!Number.isInteger(countryEstranac)) {alert(`Code will not work, ${listItemValueEstranac[1].innerHTML}`)}
-                
-                
-
-                var documentTypeEstranac = listItemValueEstranac[2].innerHTML.slice(0, listItemValueEstranac[2].innerHTML.indexOf(":"))
-                if (documentTypeEstranac == "P" || documentTypeEstranac == "DP" ) {documentTypeEstranac = 1}
-                 else if (documentTypeEstranac == "LK") {documentTypeEstranac = 2}
-                  else {documentTypeEstranac = 1003}
-                var documentEstranac = listItemValueEstranac[2].innerHTML.slice(listItemValueEstranac[2].innerHTML.indexOf(" ")+1)
-                var dateOfBirthEstranac = listItemValueEstranac[3].innerHTML
-                var genderEstranac = listItemValueEstranac[4].innerHTML
-                if (genderEstranac == "M") {genderEstranac = 1}
-                 else {genderEstranac = 2 }
-                var dateEstranacValue = dateEstranac.value
-                var newDiv1 = document.createElement("div")
-                var newDiv2 = document.createElement("div")
-                var newDiv3 = document.createElement("div")
-                var newSpan1 = document.createElement("span")
-                var newSpan2 = document.createElement("span")
-                var newSpan3 = document.createElement("span")
-                var newSpan4 = document.createElement("span")
-                var newSpan5 = document.createElement("span")
-                var newSpan6 = document.createElement("span")
-                var newSpan7 = document.createElement("span")
-                var newSpan8 = document.createElement("span")
-                var newSpan9 = document.createElement("span")
-                var newSpan10 = document.createElement("span")
-                var newSpan11 = document.createElement("span")
-                var newSpan12 = document.createElement("span")
-                var newSpan13 = document.createElement("span")
-                var newSpan14 = document.createElement("span")
-                var newSpan15 = document.createElement("span")
-                var newSpan16 = document.createElement("span")
-                var newSpan17 = document.createElement("span")
-                
-                var brakeLine = document.createElement("br")
-                textEstranac.appendChild(newDiv1)
-                textEstranac.appendChild(newDiv2)
-                textEstranac.appendChild(newDiv3)
-                newDiv2.appendChild(newSpan1)
-                newDiv2.appendChild(newSpan2)
-                newDiv2.appendChild(newSpan3)
-                newDiv2.appendChild(newSpan4)
-                newDiv2.appendChild(newSpan5)
-                newDiv2.appendChild(newSpan6)
-                newDiv2.appendChild(newSpan7)
-                newDiv2.appendChild(newSpan8)
-                newDiv2.appendChild(newSpan9)
-                newDiv2.appendChild(newSpan10)
-                newDiv2.appendChild(newSpan11)
-                newDiv2.appendChild(newSpan12)
-                newDiv2.appendChild(newSpan13)
-                newDiv2.appendChild(newSpan14)
-                newDiv2.appendChild(newSpan15)
-                newDiv2.appendChild(newSpan16)
-                newDiv2.appendChild(newSpan17)
-                
-                    newDiv1.innerHTML = `await fetch("https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen", {
-                    "headers": {
-                      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-                      "accept-language": "hr-HR,hr;q=0.9,en-US;q=0.8,en;q=0.7",
-                      "cache-control": "max-age=0",
-                      "content-type": "application/x-www-form-urlencoded",
-                      "priority": "u=0, i",
-                      "sec-ch-ua": "\\"Chromium\\";v=\\"124\\", \\"Google Chrome\\";v=\\"124\\", \\"Not-A.Brand\\";v=\\"99\\"",
-                      "sec-ch-ua-mobile": "?0",
-                      "sec-ch-ua-platform": "\\"Windows\\"",
-                      "sec-fetch-dest": "document",
-                      "sec-fetch-mode": "navigate",
-                      "sec-fetch-site": "same-origin",
-                      "sec-fetch-user": "?1",
-                      "upgrade-insecure-requests": "1"
-                    },
-                    "referrer": "https://www.estranac.ba/ForeignCitizens/CreateForeignCitizen",
-                    "referrerPolicy": "strict-origin-when-cross-origin", `
-                  
-                  newDiv3.innerHTML = ` "method": "POST","mode": "cors","credentials": "include"});`
-                  
-                  newSpan1.innerHTML=`"body": "FirstName=`
-                  newSpan2.innerHTML=`${firstNameEstranac}`
-                  newSpan3.innerHTML=`&LastName=`
-                  newSpan4.innerHTML=`${lastNameEstranac}`
-                  newSpan5.innerHTML=`&FKGenderID=`
-                  newSpan6.innerHTML=`${genderEstranac}`
-                  newSpan7.innerHTML=`&DateOfBirth=`
-                  newSpan8.innerHTML=`${dateOfBirthEstranac}`
-                  newSpan9.innerHTML=`&FKStateOfBirthID=&PlaceOfBirth=&FKCitizenshipID=`
-                  newSpan10.innerHTML=`${countryEstranac}`
-                  newSpan11.innerHTML=`&CheckedInDate=`
-                  newSpan12.innerHTML=`${dateEstranacValue}`
-                  newSpan13.innerHTML=`&FKTravelDocumentsTypeID=`
-                  newSpan14.innerHTML=`${documentTypeEstranac}`
-                  newSpan15.innerHTML=`&TravelDocumentNumber=`
-                  newSpan16.innerHTML=`${documentEstranac}`
-                  newSpan17.innerHTML=`&TravelDocumentExpiryDate=&Publisher=&FKVisaTypeID=&VisaNumber=&VisaExpiryDate=&EntryDate=&autocomplete-places=&FKEntryPlaceID=&PhoneNumber=&Email=&Note=",`
-                    
-                   newSpan2.classList.add('estranacHighlight')
-                   newSpan4.classList.add('estranacHighlight')
-                   newSpan6.classList.add('estranacHighlight')
-                   newSpan8.classList.add('estranacHighlight')
-                   newSpan10.classList.add('estranacHighlight')
-                   newSpan12.classList.add('estranacHighlight')
-                   newSpan14.classList.add('estranacHighlight')
-                   newSpan16.classList.add('estranacHighlight')
-
-                  textEstranac.appendChild(brakeLine)
-                  textEstranac.appendChild(brakeLine)
-                    
-            }
-            if (currentDateOutput != dateEstranacValue ) {alert('Datum nije jednak trenutnom')}
+function estranac() {
+    var panel = document.querySelector(".panel")
+    if (panel.style.display === "none") 
+        {panel.style.display = "block"}
+     else {panel.style.display = "none"}
+     navigator.clipboard.writeText(panel.innerText)
 }
-
-
-
-
-
-
 
