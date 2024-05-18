@@ -3,6 +3,7 @@ const arrange = document.getElementById('arrange')
 var rearrangeListByRoom = document.getElementById("excel_data")
 const newList = document.getElementById('newList')
 var textEstranac = document.getElementById("textEstranac")
+var odjavaPanel = document.getElementById("odjavaPanel")
 var dateEstranac = document.getElementById("dateInput")
 var currentDate = new Date();
 var day = currentDate.getDate()
@@ -404,3 +405,59 @@ function estranac() {
      navigator.clipboard.writeText(panel.innerText)
 }
 
+function estranacOdjava(){
+
+    var odjavaList = document.querySelectorAll("tr")
+
+      for (let i = 0; i < odjavaList.length; i++){
+
+         var odjavaListItem = odjavaList[i].querySelectorAll("th, td")
+        
+            if (odjavaListItem[11].textContent != "BOSNA I HERCEGOVINA")
+
+                 {
+                    var odjavaLastName = odjavaListItem[1].textContent.slice(0, odjavaListItem[1].textContent.indexOf(",") ).trim().toUpperCase()
+                    var odjavaName = odjavaListItem[1].textContent.slice(odjavaListItem[1].textContent.indexOf(",") + 1 ).trim().toUpperCase()
+                    
+                    odjavaPanel.innerHTML += `<div class='panel2'>
+                    var odjavaEstranacPanelBody = document.querySelector("tbody");
+                    var odjavaEstranacPanelTr = odjavaEstranacPanelBody.querySelectorAll("tr");
+                    
+                       for (let j = 0; j < odjavaEstranacPanelTr.length; j++)
+                         {  var odjavaEstranacPanelTd = odjavaEstranacPanelTr[j].querySelectorAll("td");
+                            var nameTd = odjavaEstranacPanelTd[1].innerText;
+                            var lastNameTd = odjavaEstranacPanelTd[2].innerText;
+
+                            if ( nameTd == '${odjavaName}' && lastNameTd == '${odjavaLastName}' ) {
+                                var odjavaHref = odjavaEstranacPanelTr[j].querySelector(".text-right").innerHTML;
+                                var odjavaHrefNum = odjavaHref.slice(odjavaHref.indexOf("en/") + 3, odjavaHref.indexOf("en/") + 10 );
+                                
+                                fetch("https://www.estranac.ba/ForeignCitizens/CheckOutForeignCitizen", {
+                                   "headers": {
+                                     "accept": "*/*",
+                                     "accept-language": "hr-HR,hr;q=0.9,en-US;q=0.8,en;q=0.7",
+                                     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                                     "priority": "u=1, i",
+                                     "sec-ch-ua": "\\"Google Chrome\\";v=\\"125\\", \\"Chromium\\";v=\\"125\\", \\"Not.A/Brand\\";v=\\"24\\"",
+                                     "sec-ch-ua-mobile": "?0",
+                                     "sec-ch-ua-platform": "\\"Windows\\"",
+                                     "sec-fetch-dest": "empty",
+                                     "sec-fetch-mode": "cors",
+                                     "sec-fetch-site": "same-origin",
+                                     "x-requested-with": "XMLHttpRequest"
+                                   },
+                                   "referrer": "https://www.estranac.ba/ForeignCitizens/IndexForeignCitizen?page=5",
+                                   "referrerPolicy": "strict-origin-when-cross-origin",
+                                   "body": "id="+ odjavaHrefNum +"&fiscalBillNumber=&checkoutDate=${dateEstranac.value}",
+                                   "method": "POST",
+                                   "mode": "cors",
+                                   "credentials": "include"
+                                 });
+                                }
+                           }</div>`
+
+                   
+                 }
+    }
+    rearrangeListByRoom.innerHTML= ''
+}
