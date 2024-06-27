@@ -57,7 +57,7 @@ var characterClasses = [
        {
       name:"paladin",
       maxHp: 100,
-      hp: 100,
+      hp: 80,
       shield: 0,
       hitbox: 1,
       vievRange: 3,
@@ -71,7 +71,7 @@ var characterClasses = [
             {
                 name: "Holy Light",
                 dmg: 0,
-                heal: 10,
+                heal: 20,
                 shield: 0,
                 tag: function(){
                     return `<li>You cast holy light and recover <span class='list-item-heal'>${this.heal} health</span></li>`;
@@ -147,17 +147,45 @@ var enemyArray = [
 var enemyStats = {} 
 
 var main = document.getElementById("main")
+
 var screen = document.getElementById("screen")
+
 var statusbar = document.getElementById("status-bar")
+
 var combatLog = document.getElementById("combat-log")
+
 var combatLogArr = []
-var maxHp = document.getElementById("maxHp")
-var HP = document.getElementById("HP")
-var exp = document.getElementById("exp")
-var lvl = document.getElementById("lvl")
-var dmg = document.getElementById("dmg")
+
+var statsBarPlayerClass = document.getElementById("player-class")
+
+var statsBarPlayerHp = document.getElementById("player-HP")
+
+var statsBarPlayerLvl = document.getElementById("player-lvl")
+
+var statsBarPlayerExp = document.getElementById("player-exp")
+
+var statsBarPlayerDmg = document.getElementById("player-dmg")
+
+var playerHP = document.getElementById("hp-bar-player-nums")
+
+var playerHealthBar = document.getElementById("hp-bar-player-value")
+
+var playerShieldBarAura = document.getElementById("shield-bar")
+
+var playerShieldBar = document.getElementById("shield-bar-player")
+
+var enemyHP = document.getElementById("hp-bar-enemy-nums")
+
+var enemyHealthBarValue = document.getElementById("hp-bar-enemy-value")
+
+var enemyHealthBar = document.getElementById("hp-bar-enemy")
+
 var intro = document.getElementById("intro")
+
 var combatScreen = document.getElementById("combat-screen")
+
+var combatScreenEnemy = document.getElementById("combat-screen-enemy")
+
 var disableMove = false
 
 function resolveTimer() {
@@ -174,20 +202,45 @@ function charSelect(x){
    var playerStats = characterClasses[getId]
 
    document.documentElement.style.setProperty('--charClass', `url("${characterClasses[getId].name}.png")` );
+    
+   function updateHp(){
+
+    playerStats.hp <= 0 ? playerStats.hp = 0 : null
+
+    playerHP.textContent = playerStats.hp + "/" + playerStats.maxHp
+
+    playerHealthBar.style.width = `${playerStats.hp / (playerStats.maxHp / 100)}%`
+
+
+
+   }
+
+   function updateEnemyHp(){
+
+    enemyStats.hp <= 0 ? enemyStats.hp = 0 : null;
+    
+    enemyHP.textContent = enemyStats.hp + "/" + enemyStats.maxHp
+
+    enemyHealthBarValue.style.width = `${enemyStats.hp / (enemyStats.maxHp / 100)}%`
+   }
 
    function updateUi(){
     
-    maxHp.textContent = playerStats.maxHp
-    HP.textContent = playerStats.hp
-    exp.textContent = playerStats.exp
-    lvl.textContent = playerStats.lvl
-    dmg.textContent = playerStats.dmg
+    updateHp()
+
+    statsBarPlayerClass.textContent = "Class: " + playerStats.name.toUpperCase()
+
+    statsBarPlayerExp.textContent = "Exp: " + playerStats.exp
+
+    statsBarPlayerLvl.textContent = "Level: " + playerStats.lvl
+
+    statsBarPlayerDmg.textContent = "Damage: " + playerStats.dmg
 
 }
 
 updateUi()
 
-function getLvl (){
+function getLvl(){
     var currentLevel = playerStats.lvl
     
     if (playerStats.exp >= 45 && playerStats.exp < 75 ) {playerStats.lvl = 2 }
@@ -202,10 +255,10 @@ function getLvl (){
             playerStats.maxHp += 20
             playerStats.hp += 20
             playerStats.dmg += 4
-            playerStats.startOfFight[0].dmg += 5
+            
         }
 
-           combatLogArr.push(`<li class='list-item-lvl'>You have gained level ${playerStats.lvl}</li>`)
+           combatLog.innerHTML = `<li class='list-item-lvl'>You have gained level ${playerStats.lvl}</li>` + combatLog.innerHTML
         
             updateUi()
     }
@@ -347,76 +400,144 @@ document.body.addEventListener('keydown', async function (event) {
 
         var getEnemyType = getEnemyId.getAttribute("enemytype")
 
-        var createEnemy = enemyArray.find(x => x.name == getEnemyType)
+        var loadEnemy = enemyArray.find(x => x.name == getEnemyType)
 
         document.documentElement.style.setProperty('--enemyType', `url("${getEnemyType}.png")` );
 
-        combatScreen.style.visibility="visible"
+        combatScreenEnemy.style.visibility="visible"
+
+        enemyHealthBar.style.visibility="visible"
         
-        var playerCombatHp = playerStats.hp
+        
         var playerCombatShield = playerStats.shield
+
+        var maxShieldArr = []
+
         var checkForStartOfFight = true
+
         var playerCombatDmg = playerStats.dmg
+
         var playerCombatCrit = playerStats.crit
+        
         var playerCombatExp = playerStats.exp
         var playerCombatLvl = playerStats.lvl
         var playerCombatEveryThird = playerStats.everyThird
 
 
-        enemyStats.hp = createEnemy.hp
-        enemyStats.dmg = createEnemy.dmg
-        enemyStats.exp = createEnemy.exp
-        enemyStats.evade = createEnemy.evade
-        enemyStats.lifesteal = createEnemy.lifesteal
+        enemyStats.hp = loadEnemy.hp
+        enemyStats.maxHp = loadEnemy.hp
+        enemyStats.dmg = loadEnemy.dmg
+        enemyStats.exp = loadEnemy.exp
+        enemyStats.evade = loadEnemy.evade
+        enemyStats.lifesteal = loadEnemy.lifesteal
+        enemyStats.exp = loadEnemy.exp
+
+        updateEnemyHp()
+
+        updateHp()
+
+        combatLogArr = []
 
         
         
-        while (playerCombatHp > 0 && enemyStats.hp > 0 ){
-            combatLogArr = []
-
-            console.log(enemyStats.hp);
+        while (playerStats.hp > 0 && enemyStats.hp > 0 ){
+            
+           
             
             if ( checkForStartOfFight ) {
                 for (let i = 0; i < playerStats.startOfFight.length; i++)
                     {   
                         playerCombatShield = playerCombatShield + playerStats.startOfFight[i].shield
 
-                        playerCombatHp = playerCombatHp + playerStats.startOfFight[i].heal
+                        playerStats.hp = playerStats.hp + playerStats.startOfFight[i].heal
+
+                        playerStats.hp > playerStats.maxHp ? playerStats.hp = playerStats.maxHp : null
                         
                         enemyStats.hp =  enemyStats.hp - playerStats.startOfFight[i].dmg
                        
-                        combatLogArr.push( playerStats.startOfFight[i].tag())
+                        combatLogArr.push({
+
+                            logMsg:  playerStats.startOfFight[i].tag(),
+
+                            playerHp: playerStats.hp,
+
+                            playerShield: playerCombatShield,
+
+                            playerExp : "",
+                            
+                            enemyHp: enemyStats.hp
+                          }  
+                        )
                     }
 
-                playerCombatHp > playerStats.maxHp ? playerCombatHp = playerStats.maxHp : null
-                
-                for (let i = 0; i < combatLogArr.length; i++){
-                    
-                    var combatListItem = combatLogArr[i]
-                    combatLog.innerHTML = combatListItem + combatLog.innerHTML
-                    var delay = await resolveTimer()
-                    HP.textContent = playerCombatHp
-                }
+                   
+
                 checkForStartOfFight = false 
-                combatLogArr = []
+
+                
             }
+
+            
+
+            maxShieldArr.push(playerCombatShield)
+            
 
             if (enemyStats.hp > 0){
 
                 var evadeCheck = Math.floor(Math.random() * 100)
 
-                evadeCheck < enemyStats.evade ? combatLogArr.push("<li>You <span class='list-item-miss'>missed</span> the attack</li>") : null
+                evadeCheck < enemyStats.evade ? combatLogArr.push({
+
+                    logMsg:"<li>You <span class='list-item-miss'>missed</span> the attack</li>",
+
+                    playerHp: playerStats.hp,
+
+                    playerShield: playerCombatShield,
+
+                    playerExp : "",
+                    
+                    enemyHp: enemyStats.hp
+
+                }) : null
     
                 if (evadeCheck >=  enemyStats.evade){
                     
                     let critCheck = Math.floor(Math.random() * 100)
+
                     if (critCheck < playerCombatCrit){
+
                         enemyStats.hp = enemyStats.hp - playerCombatDmg
-                        combatLogArr.push(`<li>You crit for <span class='list-item-dmg'>${playerCombatDmg *2} damage</span></li>`)
+                        
+                        combatLogArr.push({
+
+                            logMsg:`<li>You crit for <span class='list-item-dmg'>${playerCombatDmg *2} damage</span></li>`,
+
+                            playerHp: playerStats.hp,
+
+                            playerShield: playerCombatShield,
+
+                            playerExp : "",
+                            
+                            enemyHp: enemyStats.hp
+
+                        
+                        })
                 
                         }
                      enemyStats.hp = enemyStats.hp - playerCombatDmg
-                     critCheck < playerCombatCrit ? "" : combatLogArr.push(`<li>You have dealt <span class='list-item-dmg'> ${playerCombatDmg} damage</span> </li>`)
+
+                     critCheck < playerCombatCrit ? "" : combatLogArr.push({
+
+                        logMsg:`<li>You have dealt <span class='list-item-dmg'> ${playerCombatDmg} damage</span> </li>`,
+
+                        playerHp: playerStats.hp,
+
+                        playerShield: playerCombatShield,
+
+                        playerExp : "",
+                        
+                        enemyHp: enemyStats.hp
+                    })
                 }
             }
 
@@ -425,17 +546,23 @@ document.body.addEventListener('keydown', async function (event) {
                 
                 playerStats.exp += enemyStats.exp
 
-                combatLogArr.push(`<li>Enemy defeated, gained  <span class='list-item-lvl'>${enemyStats.exp} exp</span></li>`)
-                getLvl()
-                updateUi()
+                combatLogArr.push({
 
-                for (let i = 0; i < combatLogArr.length; i++){
+                    logMsg:`<li>Enemy defeated, gained  <span class='list-item-lvl'>${enemyStats.exp} exp</span></li>`,
+
+                    playerHp: playerStats.hp,
+
+                    playerShield: playerCombatShield,
+
+                    playerExp : enemyStats.exp,
                     
-                    var combatListItem = combatLogArr[i]
-                    combatLog.innerHTML = combatListItem + combatLog.innerHTML
-                    var delay = await resolveTimer()
-                    
-                }
+                    enemyHp: enemyStats.hp,
+
+                })
+
+              
+
+                
                  break
                        }
 
@@ -448,12 +575,27 @@ document.body.addEventListener('keydown', async function (event) {
 
                 if (playerCombatShield < 0)  
                     {
-                        playerCombatHp = playerCombatHp + playerCombatShield
+                        
+                        playerStats.hp = playerStats.hp + playerCombatShield
+
                         checkForShieldBreak =  Math.abs(playerCombatShield)
                     } 
                 
-                combatLogArr.push(`<li>Enemy deals <span class='list-item-shield'> ${enemyStats.dmg - checkForShieldBreak} damage</span> to your shield and 
-                  <span class='list-item-dmg'>${checkForShieldBreak} damage </span> to your health</li>`)
+                combatLogArr.push({
+
+                    logMsg: `<li>Enemy deals <span class='list-item-shield'> ${enemyStats.dmg - checkForShieldBreak} damage</span> to your shield and 
+                     <span class='list-item-dmg'>${checkForShieldBreak} damage </span> to your health</li>`,
+
+                     playerHp: playerStats.hp,
+
+                     playerShield: playerCombatShield,
+
+                     playerExp : "",
+                     
+                     enemyHp: enemyStats.hp
+
+                
+                })
 
                 
             } 
@@ -461,49 +603,135 @@ document.body.addEventListener('keydown', async function (event) {
 
            else {
 
-            playerCombatHp = playerCombatHp - enemyStats.dmg
+            playerStats.hp = playerStats.hp - enemyStats.dmg
 
             var enemyLifestole = enemyStats.dmg * (enemyStats.lifesteal / 100)
+
             enemyStats.hp += enemyLifestole
 
-            enemyStats.lifesteal > 0 ? combatLogArr.push(`<li>Enemy deals <span class='list-item-dmg'> ${enemyStats.dmg} damage</span> to you and recovers 
-                <span class='list-item-heal'>${enemyLifestole} HP</span> from lifesteal</li>`) 
-            : combatLogArr.push(`<li>Enemy deals <span class='list-item-dmg'> ${enemyStats.dmg} damage</span> to you</li>`)
+            enemyStats.lifesteal > 0 ? combatLogArr.push({
 
-            playerStats.hp = playerCombatHp
+                logMsg:`<li>Enemy deals <span class='list-item-dmg'> ${enemyStats.dmg} damage</span> to you and recovers 
+                <span class='list-item-heal'>${enemyLifestole} HP</span> from lifesteal</li>`,
+
+                playerHp: playerStats.hp,
+
+                playerShield: playerCombatShield,
+
+                playerExp : "",
+                
+                enemyHp: enemyStats.hp
+            
+            }) 
+
+
+
+            : combatLogArr.push({
+
+                logMsg:`<li>Enemy deals <span class='list-item-dmg'> ${enemyStats.dmg} damage</span> to you</li>`,
+
+                playerHp: playerStats.hp,
+
+                playerShield: playerCombatShield,
+
+                playerExp : "",
+                
+                enemyHp: enemyStats.hp
+            
+                })
+
+            
         }
             
             if (playerStats.hp <= 0) {
 
-                playerStats.hp = "DEAD"
+               
 
-                HP.textContent = playerStats.hp
+                combatLogArr.push({
 
-                for (let i = 0; i < combatLogArr.length; i++){
+                    logMsg: `You Died`,
+
+                    playerHp: playerStats.hp,
+
+                    playerShield: playerCombatShield,
+
+                    playerExp : "",
                     
-                        var combatListItem = combatLogArr[i]
-                        combatLog.innerHTML = combatListItem + combatLog.innerHTML
-                        var delay = await resolveTimer()
-                        
-                    }
+                    enemyHp: enemyStats.hp
+                })
+                     
 
                 break
 
                       }
-            
-                      for (let i = 0; i < combatLogArr.length; i++){
-                    
-                        var combatListItem = combatLogArr[i]
-                        combatLog.innerHTML = combatListItem + combatLog.innerHTML
-                        var delay = await resolveTimer()
-                        HP.textContent = playerCombatHp
-                    }
+       
+                   
         }
+       
 
-        HP.textContent = playerStats.hp
+              for (let i = 0; i < combatLogArr.length; i++) {
+
+               
+                   
+                var delay = await resolveTimer()
+
+                   
+
+                 var combatListItem = combatLogArr[i]
+
+                 combatLog.innerHTML = combatListItem.logMsg + combatLog.innerHTML
+
+                 playerStats.hp = combatListItem.playerHp
+
+                 playerCombatShield = combatListItem.playerShield
+
+                 enemyStats.hp = combatListItem.enemyHp
+
+
+                 playerStats.hp <= 0 ? playerStats.hp = 0 : null
+
+
+                 playerHP.textContent = playerStats.hp + "/" + playerStats.maxHp
+
+                 playerHealthBar.style.width = `${playerStats.hp / (playerStats.maxHp / 100)}%`
+
+                 playerCombatShield < 0 ? playerCombatShield = 0 : null
+
+                 if (playerCombatShield > 0) {
+ 
+                     playerShieldBarAura.style.scale = 1
+ 
+                    }
+ 
+                 playerShieldBar.style.width = `${playerCombatShield / (playerStats.maxHp /100)}%`
+ 
+              
+ 
+                 playerShieldBarAura.style.opacity = `${(playerCombatShield / (maxShieldArr[0]/100)) * 0.5}%`
+
+            
+
+            
+
+            updateEnemyHp()
+
+                   
+       
+    }
+        
+        
+        playerShieldBarAura.style.scale = "0"
+
+        playerShieldBar.style.width = 0
 
         if (enemyStats.hp <= 0) {
+
+            updateUi()
+
+            getLvl()
+
             getEnemyId.setAttribute("class", "boxItem")
+            
             getEnemyId.style.opacity="0"
             var areaRemove = document.querySelectorAll(`[parent="${playerGetsIntoAgro}"]`)
             areaRemove.forEach((item)=>{
@@ -511,7 +739,14 @@ document.body.addEventListener('keydown', async function (event) {
                 item.removeAttribute("parent")
             })
             getEnemyId.removeAttribute("enemytype")
+
+            setTimeout(function(){
+                combatScreenEnemy.style.visibility="hidden"
+            enemyHealthBar.style.visibility="hidden"
+            },2000)
         }
+
+        
         
         disableMove = false
     }
@@ -519,10 +754,8 @@ document.body.addEventListener('keydown', async function (event) {
 
 });
 
-
-
-
 main.style.display = "block"
+
 intro.style.display = "none"
 
 }
