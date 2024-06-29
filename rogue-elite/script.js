@@ -4,13 +4,37 @@ var characterClasses = [
       maxHp: 120,
       hp: 120,
       shield: 0,
+      armor: 0,
       hitbox: 1,
       vievRange: 3,
       dmg: 18, 
-      crit: 15,
+      crit: 0,
       exp: 0,
       lvl: 1,
       gold: 0,
+      talent: {
+        effect: function(){
+            playerStats.crit += 20;
+        },
+        description: "Your critical chance is increased by 20%",
+      },
+      perk:[
+        {
+            effect: function(){
+                playerStats.armor += 1
+            },
+            name: "Thick Skin",
+            description: "Your armor is increased by 1"
+        },
+
+        {
+            effect: function(){
+                return ""
+            },
+            name: "Dungeon Dweller",
+            description: "You get 10 more max HP each level"
+        }
+      ],
       startOfFight: [],
       everyThird:0,
     },
@@ -19,6 +43,7 @@ var characterClasses = [
       maxHp: 80,
       hp: 80,
       shield: 0,
+      armor: 0,
       hitbox: 1,
       vievRange: 3,
       dmg: 5, 
@@ -26,39 +51,60 @@ var characterClasses = [
       exp: 0,
       lvl: 1,
       gold: 0,
-      startOfFight: [
+      talent: {
+        effect: function(){
+            playerStats.startOfFight.push({
+                name: "Fireball",
+                dmg: 20,
+                heal: 0,
+                shield: 0,
+                tag: function(){
+                    return `<li>You blast your enemy with Fireball for <span class='list-item-dmg'>${this.dmg} damage</span></li>`;
+                },
+            },)
+        },
+        description: "At the start of a fight, you cast a fireball, dealing 20 damage to enemy"
+      },
+      perk:[
         {
-            name: "Fireball",
-            dmg: 20,
-            heal: 0,
-            shield: 0,
-            tag: function(){
-                return `<li>You blast your enemy with Fireball for <span class='list-item-dmg'>${this.dmg} damage</span></li>`;
+            effect: function(){
+                playerStats.startOfFight.push({
+                    name: "Magic Shield",
+                    dmg: 0,
+                    heal: 0,
+                    shield: 17,
+                    tag: function(){
+                        return `<li>You cast Magic Shield protecting you for <span class='list-item-shield'>${this.shield} damage</span></li>`;
+                    },
+                    
+                    
+                }
+        )
             },
+            name: "Magic Shield",
+            description: "You start each fight with magic shield, preventing up to 20 dmg",
         },
         {
-            name: "Magic Shield",
-            dmg: 0,
-            heal: 0,
-            shield: 20,
-            tag: function(){
-                return `<li>You cast Magic Shield protecting you for <span class='list-item-shield'>${this.shield} damage</span></li>`;
+            effect: function(){
+                let randomItem = Math.floor(Math.random() * items[1].length)
+                items[1][randomItem].effect()
+                combatLog.innerHTML = combatLog.innerHTML + `<li>item received: <span class='list-item-lvl'>${items[1][randomItem].name}</span></li>`
             },
-            
-            
+            name: "Astral Conjuration",
+            description: "Get random level 2 item",
         }
 
-      ]
-       
-      ,
+      ],
+      startOfFight: [],
       everyThird:0,
       },
 
        {
       name:"paladin",
       maxHp: 100,
-      hp: 80,
+      hp: 20,
       shield: 0,
+      armor: 0,
       hitbox: 1,
       vievRange: 3,
       dmg: 7, 
@@ -66,83 +112,156 @@ var characterClasses = [
       exp: 0,
       lvl: 1,
       gold: 0,
-      startOfFight: 
-        [
-            {
+      talent: {
+        effect: function(){
+            playerStats.startOfFight.push({
                 name: "Holy Light",
                 dmg: 0,
-                heal: 20,
+                heal: 10,
                 shield: 0,
                 tag: function(){
                     return `<li>You cast holy light and recover <span class='list-item-heal'>${this.heal} health</span></li>`;
                 },
                 
+            },)
+        },
+        description: "At the start of a fight, you heal 10 health"
+      },
+      perk:0,
+      startOfFight: [],
+      everyThird:
+       [
+        {
+            name: "Smite",
+            dmg: 8,
+            heal: 3,
+            shield: 0,
+            tag: function(){
+                return `<li>You smite your enemy dealing <span class='list-item-dmg'>${this.dmg} damage</span> and heal yourself for <span class='list-item-heal'>${this.heal} health</span></li>`;
             },
-        ]
-      ,
-      everyThird:0,
+            
+        },
+      ]
+     , 
       }
       
 ]
 
-
+var playerStats = []
 
 var enemyArray = [
     {
     name: "skeleton",
+    tier: 0,
     hitbox: 1,
     hp: 50,
     dmg: 7,
     exp: 30,
     evade: 0,
     lifesteal: 0,
+    item: 50,
 
     },
 
     {
     name:"ghost",
+    tier: 0,
     hitbox: 1,
     hp: 35,
     dmg: 5,
     exp: 35,
     evade: 40,
     lifesteal: 0,
+    item: 50,
 
     },
     {
     name:"bat",
+    tier: 0,
     hitbox: 1,
     hp: 25,
     dmg: 4,
     exp: 25,
     evade: 0,
     lifesteal: 50,
+    item: 50,
     
         },
         {
     name:"ninja",
+    tier: 0,
     hitbox: 1,
     hp: 40,
     dmg: 5,
     exp: 40,
     evade: 15,
     lifesteal: 15,
+    item: 50,
     
         },
          {
     name:"dragon",
+    tier: 1,
     hitbox: 2,
     hp: 100,
     dmg: 12,
     exp: 140,
     evade: 0,
     lifesteal: 0,
+    item: 50,
     
         }
     
 ]
 
+var items = [
+  [  
+    {
+        name: "Gorgon's Shield",
+        description: "Grants 8 shield",
+        effect : function(){
+            playerStats.shield += 10
+        },
+    },
+    {
+        name: "Brass Armor",
+        description: "Grants 1 armor",
+        effect : function(){
+            playerStats.armor += 1
+        },
+    },
+    {
+        name: "Bottled Flame",
+        description: "Deals 4 damage to enemy at the start of a fight",
+        effect : function(){
+            playerStats.startOfFight.push(
+                {
+                    name: "Bottled Flame",
+                    dmg: 4,
+                    heal: 0,
+                    shield: 0,
+                    tag: function(){
+                        return `<li>You throw a flaming bottle at the enemy, dealing <span class='list-item-dmg'>${this.dmg} damage</span></li>`;
+                    },
+                },
+            )
+                
+            
+        },
+    },
 
+
+],
+[
+    {
+        name: "Sword of Might",
+        description: "Increases damage by 5",
+        effect : function(){
+            playerStats.dmg += 5
+        },
+    },
+]
+]
 
 var enemyStats = {} 
 
@@ -165,6 +284,10 @@ var statsBarPlayerLvl = document.getElementById("player-lvl")
 var statsBarPlayerExp = document.getElementById("player-exp")
 
 var statsBarPlayerDmg = document.getElementById("player-dmg")
+
+var statsBarPlayerCrit = document.getElementById("player-crit")
+
+var lvlUpScreen = document.getElementById("lvl-up-screen")
 
 var playerHP = document.getElementById("hp-bar-player-nums")
 
@@ -196,10 +319,32 @@ function resolveTimer() {
     });
   }
 
+ 
 function charSelect(x){
    var getId = x.getAttribute("id")
    
-   var playerStats = characterClasses[getId]
+   playerStats = characterClasses[getId]
+
+   playerStats.talent.effect()
+
+   for (let j = 0; j < playerStats.perk.length; j++){
+
+    
+    var perkOption = document.createElement("div")
+    
+    perkOption.classList.add("lvl-up-screen-item")
+    
+    perkOption.setAttribute("perkOption", j)
+    
+    perkOption.setAttribute("onclick","chosePerk(this)")
+    
+    perkOption.textContent = playerStats.perk[j].description
+    
+    lvlUpScreen.appendChild(perkOption)
+
+   }
+
+
 
    document.documentElement.style.setProperty('--charClass', `url("${characterClasses[getId].name}.png")` );
     
@@ -211,9 +356,7 @@ function charSelect(x){
 
     playerHealthBar.style.width = `${playerStats.hp / (playerStats.maxHp / 100)}%`
 
-
-
-   }
+    }
 
    function updateEnemyHp(){
 
@@ -224,19 +367,7 @@ function charSelect(x){
     enemyHealthBarValue.style.width = `${enemyStats.hp / (enemyStats.maxHp / 100)}%`
    }
 
-   function updateUi(){
-    
-    updateHp()
-
-    statsBarPlayerClass.textContent = "Class: " + playerStats.name.toUpperCase()
-
-    statsBarPlayerExp.textContent = "Exp: " + playerStats.exp
-
-    statsBarPlayerLvl.textContent = "Level: " + playerStats.lvl
-
-    statsBarPlayerDmg.textContent = "Damage: " + playerStats.dmg
-
-}
+   
 
 updateUi()
 
@@ -271,10 +402,15 @@ getLvl()
  
 
 for (var i = 0; i < 90; i++){
+
     for (var j = 0; j < 90; j++){
+
         var boxItem = document.createElement("div")
+
         boxItem.setAttribute("id", j + "-" + i)
+
         boxItem.classList.add("boxItem")
+
         screen.appendChild(boxItem)
     }
 
@@ -282,49 +418,139 @@ for (var i = 0; i < 90; i++){
 
 
 var player = document.getElementById("44-44")
+
 player.classList.add("player")
+
 player.style.opacity="1"
 
 while (enemyLocationArray.length){
+
     var enemyId = enemyLocationArray.shift()
+
     var enemy = document.getElementById(enemyId)
+
     enemy.classList.add("enemy")
+
     let randomNum = Math.floor(Math.random() * enemyArray.length)
+
     var createEnemy = enemyArray[randomNum]
     
     enemy.setAttribute("enemyType",createEnemy.name)
+
     for (let i = 0; i < neighbourArr[createEnemy.hitbox].length; i++){
+
+
         var enemyIDX = enemyId.slice(0, enemyId.indexOf("-"))
+
         var enemyIDY = enemyId.slice(enemyId.indexOf("-") +1)
+
         var neighbourCheckEnemy = (Number(enemyIDX) + neighbourArr[createEnemy.hitbox][i][1]) + "-" + (Number(enemyIDY) + neighbourArr[createEnemy.hitbox][i][0])
+
         var neighbourEnemy = document.getElementById(neighbourCheckEnemy)
+
         neighbourEnemy.classList.add("enemyArea")
+
         neighbourEnemy.setAttribute("parent", enemyId)
+
         
     }
 
 }
 
+for (let i = 0; i < neighbourArr[playerStats.hitbox].length; i++){
+
+    var playerIDX = player.id.slice(0, player.id.indexOf("-"))
+
+    var playerIDY = player.id.slice(player.id.indexOf("-") +1)
+
+    var neighbourCheck = (Number(playerIDX) + neighbourArr[playerStats.hitbox][i][1]) + "-" + (Number(playerIDY) + neighbourArr[playerStats.hitbox][i][0])
+
+    var neighbour = document.getElementById(neighbourCheck)
+
+    neighbour.classList.add("playerArea")
+
+    if (neighbour.classList.contains("enemyArea"))
+
+        {var playerGetsIntoAgro = neighbour.getAttribute("parent")}
+
+}
+
+for (let i = 0; i < neighbourArr[playerStats.vievRange].length; i++){
+
+    var playerIDX = player.id.slice(0, player.id.indexOf("-"))
+
+    var playerIDY = player.id.slice(player.id.indexOf("-") +1)
+
+    var neighbourCheck = (Number(playerIDX) + neighbourArr[playerStats.vievRange][i][0]) + "-" + (Number(playerIDY) + neighbourArr[playerStats.vievRange][i][1])
+
+    
+
+    if (document.getElementById(neighbourCheck)){
+
+        
+
+        var neighbour = document.getElementById(neighbourCheck)
+
+        neighbour.classList.add("visualArea")
+
+        
+
+        if (neighbour.classList.contains("enemyArea"))
+
+            {var playerGetsIntoVisual = neighbour.getAttribute("parent")
+
+                var getEnemyVisual = document.getElementById(playerGetsIntoVisual)
+
+                getEnemyVisual.classList.add(getEnemyVisual.getAttribute("enemytype"))
+
+                getEnemyVisual.classList.add("visualArea")
+
+                getEnemyVisual.style.opacity="1"
+
+                var discoveredEnemyArea = document.querySelectorAll(`[parent="${playerGetsIntoVisual}"]`)
+
+                discoveredEnemyArea.forEach((element)=>{
+
+                    element.classList.add("visualArea")
+
+                })
+
+            }
+
+           neighbour.style.opacity = "0"
+
+    }
+    
+}
+
 document.body.addEventListener('keydown', async function (event) {
+
     const key = event.key;
+
     var location = player.id
+
     if (!disableMove){
+
         switch (key) {
+
             case "a":
                var getCoords = Number(location.slice(0, location.indexOf("-"))) - 1
                var newCoords = getCoords + "-" + location.slice(location.indexOf("-") +1)
                var newCoords2 = (getCoords - 1 )+ "-" + location.slice(location.indexOf("-") +1)
                 break;
+
             case "d":
                 var getCoords = Number(location.slice(0, location.indexOf("-"))) + 1
                 var newCoords = getCoords + "-" + location.slice(location.indexOf("-") +1)
                 var newCoords2 = (getCoords +1) + "-" + location.slice(location.indexOf("-") +1)
                 break;
+
             case "w":
                 var getCoords = Number(location.slice(location.indexOf("-") +1)) - 1
                 var newCoords = location.slice(0, location.indexOf("-")) + "-" + getCoords  
                 var newCoords2 = location.slice(0, location.indexOf("-")) + "-" + (getCoords -1) 
                 break;
+
             case "s":
                 var getCoords = Number(location.slice(location.indexOf("-") +1)) + 1
                 var newCoords = location.slice(0, location.indexOf("-")) + "-" + getCoords  
@@ -334,58 +560,108 @@ document.body.addEventListener('keydown', async function (event) {
     } 
     
 
+
     if (document.getElementById(newCoords2)){
+
        
+
         player.classList.remove("player")
+
         player = document.getElementById(newCoords)
+
         player.classList.add("player")
+
        
+
         var playerArea = document.querySelectorAll(".playerArea")
+
         playerArea.forEach(( playerAreaBox )=>{
+
             playerAreaBox.classList.remove("playerArea")
+
         })
 
+
+
         var visualArea = document.querySelectorAll(".visualArea")
+
         visualArea.forEach(( visualAreaBox )=>{
+
             
+
            if (!visualAreaBox.classList.contains("enemyArea")) 
+
             {visualAreaBox.style.opacity = "0.55"}
+
         })
+
         
         
         player.style.opacity = "1"
 
+
         for (let i = 0; i < neighbourArr[playerStats.hitbox].length; i++){
+
             var playerIDX = player.id.slice(0, player.id.indexOf("-"))
+
             var playerIDY = player.id.slice(player.id.indexOf("-") +1)
+
             var neighbourCheck = (Number(playerIDX) + neighbourArr[playerStats.hitbox][i][1]) + "-" + (Number(playerIDY) + neighbourArr[playerStats.hitbox][i][0])
+
             var neighbour = document.getElementById(neighbourCheck)
+
             neighbour.classList.add("playerArea")
+
             if (neighbour.classList.contains("enemyArea"))
+
                 {var playerGetsIntoAgro = neighbour.getAttribute("parent")}
+
         }
+
         for (let i = 0; i < neighbourArr[playerStats.vievRange].length; i++){
+
             var playerIDX = player.id.slice(0, player.id.indexOf("-"))
+
             var playerIDY = player.id.slice(player.id.indexOf("-") +1)
+
             var neighbourCheck = (Number(playerIDX) + neighbourArr[playerStats.vievRange][i][0]) + "-" + (Number(playerIDY) + neighbourArr[playerStats.vievRange][i][1])
+
             
+
             if (document.getElementById(neighbourCheck)){
+
                 
+
                 var neighbour = document.getElementById(neighbourCheck)
+
                 neighbour.classList.add("visualArea")
+
                 
+
                 if (neighbour.classList.contains("enemyArea"))
+
                     {var playerGetsIntoVisual = neighbour.getAttribute("parent")
+
                         var getEnemyVisual = document.getElementById(playerGetsIntoVisual)
+
                         getEnemyVisual.classList.add(getEnemyVisual.getAttribute("enemytype"))
+
                         getEnemyVisual.classList.add("visualArea")
+
                         getEnemyVisual.style.opacity="1"
-                        var discoveredEnemyArea = this.querySelectorAll(`[parent="${playerGetsIntoVisual}"]`)
+
+                        var discoveredEnemyArea = document.querySelectorAll(`[parent="${playerGetsIntoVisual}"]`)
+
                         discoveredEnemyArea.forEach((element)=>{
+
                             element.classList.add("visualArea")
+
                         })
+
                     }
+
                    neighbour.style.opacity = "0"
+
             }
             
         }
@@ -415,9 +691,13 @@ document.body.addEventListener('keydown', async function (event) {
 
         var checkForStartOfFight = true
 
+        var checkForEveryThird = 0
+
         var playerCombatDmg = playerStats.dmg
 
         var playerCombatCrit = playerStats.crit
+
+        var playerCombatArmor = playerStats.armor
         
         var playerCombatExp = playerStats.exp
         var playerCombatLvl = playerStats.lvl
@@ -425,12 +705,24 @@ document.body.addEventListener('keydown', async function (event) {
 
 
         enemyStats.hp = loadEnemy.hp
+
         enemyStats.maxHp = loadEnemy.hp
+
         enemyStats.dmg = loadEnemy.dmg
+
         enemyStats.exp = loadEnemy.exp
+
         enemyStats.evade = loadEnemy.evade
+
         enemyStats.lifesteal = loadEnemy.lifesteal
+
         enemyStats.exp = loadEnemy.exp
+
+        enemyStats.item = loadEnemy.item
+
+        enemyStats.tier = loadEnemy.tier
+
+
 
         updateEnemyHp()
 
@@ -438,11 +730,13 @@ document.body.addEventListener('keydown', async function (event) {
 
         combatLogArr = []
 
-        
+        var enemyDmgAfterArmor = enemyStats.dmg - playerCombatArmor
+
+        enemyDmgAfterArmor < 0 ? enemyDmgAfterArmor = 0 : null
         
         while (playerStats.hp > 0 && enemyStats.hp > 0 ){
             
-           
+            checkForEveryThird++
             
             if ( checkForStartOfFight ) {
                 for (let i = 0; i < playerStats.startOfFight.length; i++)
@@ -477,9 +771,37 @@ document.body.addEventListener('keydown', async function (event) {
                 
             }
 
-            
+             maxShieldArr.push(playerCombatShield)
 
-            maxShieldArr.push(playerCombatShield)
+             if (checkForEveryThird % 3 == 0){
+
+                for (let i = 0; i < playerStats.everyThird.length; i++)
+                    {
+                        playerCombatShield = playerCombatShield + playerStats.everyThird[i].shield
+
+                        playerStats.hp = playerStats.hp + playerStats.everyThird[i].heal
+
+                        playerStats.hp > playerStats.maxHp ? playerStats.hp = playerStats.maxHp : null
+                        
+                        enemyStats.hp =  enemyStats.hp - playerStats.everyThird[i].dmg
+                       
+                        combatLogArr.push({
+
+                            logMsg:  playerStats.everyThird[i].tag(),
+
+                            playerHp: playerStats.hp,
+
+                            playerShield: playerCombatShield,
+
+                            playerExp : "",
+                            
+                            enemyHp: enemyStats.hp
+                          }  
+                        )     
+                    
+
+                }
+             }
             
 
             if (enemyStats.hp > 0){
@@ -560,8 +882,29 @@ document.body.addEventListener('keydown', async function (event) {
 
                 })
 
-              
+                if ( (Math.floor(Math.random() * 50)) < enemyStats.item)
+                    {  
+                        var randomItemGenerator = Math.floor(Math.random() * items[enemyStats.tier].length)
 
+                        combatLogArr.push({
+
+                            logMsg:`<li>item received: <span class='list-item-lvl'>${items[enemyStats.tier][randomItemGenerator].name}</span></li>`,
+        
+                            playerHp: playerStats.hp,
+        
+                            playerShield: playerCombatShield,
+        
+                            playerExp : enemyStats.exp,
+                            
+                            enemyHp: enemyStats.hp,
+        
+                        })
+
+                        items[enemyStats.tier][randomItemGenerator].effect()
+                       
+                    }
+
+                    
                 
                  break
                        }
@@ -573,18 +916,24 @@ document.body.addEventListener('keydown', async function (event) {
 
                 var checkForShieldBreak = 0
 
-                if (playerCombatShield < 0)  
-                    {
-                        
-                        playerStats.hp = playerStats.hp + playerCombatShield
+                var shieldBreakDmg = 0
 
-                        checkForShieldBreak =  Math.abs(playerCombatShield)
+                if (playerCombatShield < 0)  
+                    
+                    {   
+                        shieldBreakDmg = playerCombatShield + playerCombatArmor
+
+                        shieldBreakDmg > 0 ? shieldBreakDmg = 0 : null
+                        
+                        playerStats.hp = playerStats.hp + shieldBreakDmg
+
+                        checkForShieldBreak = Math.abs(playerCombatShield)
                     } 
                 
                 combatLogArr.push({
 
                     logMsg: `<li>Enemy deals <span class='list-item-shield'> ${enemyStats.dmg - checkForShieldBreak} damage</span> to your shield and 
-                     <span class='list-item-dmg'>${checkForShieldBreak} damage </span> to your health</li>`,
+                     <span class='list-item-dmg'>${ Math.abs( shieldBreakDmg ) } damage </span> to your health</li>`,
 
                      playerHp: playerStats.hp,
 
@@ -603,15 +952,15 @@ document.body.addEventListener('keydown', async function (event) {
 
            else {
 
-            playerStats.hp = playerStats.hp - enemyStats.dmg
+            playerStats.hp = playerStats.hp - enemyDmgAfterArmor
 
-            var enemyLifestole = enemyStats.dmg * (enemyStats.lifesteal / 100)
+            var enemyLifestole = enemyDmgAfterArmor * (enemyStats.lifesteal / 100)
 
             enemyStats.hp += enemyLifestole
 
             enemyStats.lifesteal > 0 ? combatLogArr.push({
 
-                logMsg:`<li>Enemy deals <span class='list-item-dmg'> ${enemyStats.dmg} damage</span> to you and recovers 
+                logMsg:`<li>Enemy deals <span class='list-item-dmg'> ${enemyDmgAfterArmor} damage</span> to you and recovers 
                 <span class='list-item-heal'>${enemyLifestole} HP</span> from lifesteal</li>`,
 
                 playerHp: playerStats.hp,
@@ -628,7 +977,7 @@ document.body.addEventListener('keydown', async function (event) {
 
             : combatLogArr.push({
 
-                logMsg:`<li>Enemy deals <span class='list-item-dmg'> ${enemyStats.dmg} damage</span> to you</li>`,
+                logMsg:`<li>Enemy deals <span class='list-item-dmg'> ${enemyDmgAfterArmor} damage</span> to you</li>`,
 
                 playerHp: playerStats.hp,
 
@@ -730,19 +1079,28 @@ document.body.addEventListener('keydown', async function (event) {
 
             getLvl()
 
+            updateHp()
+
             getEnemyId.setAttribute("class", "boxItem")
             
             getEnemyId.style.opacity="0"
+
             var areaRemove = document.querySelectorAll(`[parent="${playerGetsIntoAgro}"]`)
+
             areaRemove.forEach((item)=>{
+
                 item.setAttribute("class", "boxItem")
+
                 item.removeAttribute("parent")
             })
             getEnemyId.removeAttribute("enemytype")
 
             setTimeout(function(){
+
                 combatScreenEnemy.style.visibility="hidden"
+
             enemyHealthBar.style.visibility="hidden"
+
             },2000)
         }
 
@@ -760,6 +1118,42 @@ intro.style.display = "none"
 
 }
 
+function chosePerk(x){
+    
+    playerStats.perk[x.getAttribute("perkOption")].effect()
+
+    updateUi()
+
+    lvlUpScreen.innerHTML = ""
+    
+    
+   }
+
+function updateHp(){
+
+  playerStats.hp <= 0 ? playerStats.hp = 0 : null
+
+  playerHP.textContent = playerStats.hp + "/" + playerStats.maxHp
+
+  playerHealthBar.style.width = `${playerStats.hp / (playerStats.maxHp / 100)}%`
+
+    }   
+
+function updateUi(){
+
+    updateHp()
+
+    statsBarPlayerClass.textContent = "Class: " + playerStats.name.toUpperCase()
+
+    statsBarPlayerExp.textContent = "Exp: " + playerStats.exp
+
+    statsBarPlayerLvl.textContent = "Level: " + playerStats.lvl
+
+    statsBarPlayerDmg.textContent = "Damage: " + playerStats.dmg
+
+    statsBarPlayerCrit.textContent = "Crit chance: " + playerStats.crit +"%"
+    
+    }
 
 var neighbourArr = [
     [],
