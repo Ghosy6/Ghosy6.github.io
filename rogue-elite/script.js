@@ -29,15 +29,59 @@ var characterClasses = [
 
         {
             effect: function(){
-                return ""
+                playerStats.levelUp.hp += 10
             },
             name: "Dungeon Dweller",
             description: "You get 10 more max HP each level"
         }
       ],
       startOfFight: [],
-      everyThird:0,
+      everyThird: [],
+      levelUp: 
+        { 
+            dmg: 2,
+            hp: 5,
+            crit: 1,
+            shield:0,
+            armor:0,
+            skill: [
+                {   name: "Apex",
+                    description: "Upgrades your talent. Your critical hit chance is increased by additional 7%",
+                    effect: function(){
+                        playerStats.crit += 7
+                    },
+                    
+                },
+
+                {   
+                    tier: 1,
+                    name: "Swordplay" + function(){return this.tier},
+                    description: "Increases damage by" + function(){return this.tier},
+                    effect: function(){
+                        playerStats.dmg += this.tier
+                    },
+                    upg: function(){
+                        tier++
+                        playerStats.levelUp.push(
+                            { 
+                                tier: function(){ return this.tier},
+                                name: "Swordplay" + function(){return this.tier},
+                                description: "Increases damage by" + function(){return this.tier},
+                                effect: function(){
+                                    playerStats.dmg += this.tier
+                                },
+                            }
+                        )
+                    }
+                    
+                },
+
+            ],
+
+        },
+      
     },
+
     {
       name:"mage",
       maxHp: 80,
@@ -65,7 +109,7 @@ var characterClasses = [
         },
         description: "At the start of a fight, you cast a fireball, dealing 20 damage to enemy"
       },
-      perk:[
+      perk: [
         {
             effect: function(){
                 playerStats.startOfFight.push({
@@ -86,9 +130,16 @@ var characterClasses = [
         },
         {
             effect: function(){
-                let randomItem = Math.floor(Math.random() * items[1].length)
-                items[1][randomItem].effect()
-                combatLog.innerHTML = combatLog.innerHTML + `<li>item received: <span class='list-item-lvl'>${items[1][randomItem].name}</span></li>`
+                let randomItem = items[1].pop()
+                randomItem.effect()
+                combatLog.innerHTML = combatLog.innerHTML + `<li>item received: <span class='list-item-lvl'>${randomItem.name}</span></li>`
+                itemsBar.innerHTML = itemsBar.innerHTML += `<div class = 'items-bar-item' style='background-image:url("${randomItem.icon}")'
+                                                             name ='${randomItem.name}' onmouseover = 'showDescription(this)' onmouseout = 'hideDescription(this)'> </div>
+                                                             
+                                                             <div class = 'items-bar-item-description' id = '${randomItem.name}'>
+                                                             <div class = 'items-bar-name'>${randomItem.name}</div>
+                                                             <div class = 'items-bar-description'> ${randomItem.description}</div>
+                                                             </div>`
             },
             name: "Astral Conjuration",
             description: "Get random level 2 item",
@@ -96,13 +147,27 @@ var characterClasses = [
 
       ],
       startOfFight: [],
-      everyThird:0,
+      everyThird: [],
+      levelUp: 
+        { 
+            dmg: 1,
+            hp: 3,
+            crit: 0,
+            shield:2,
+            armor:0,
+            skill: [
+
+            ],
+
+        },
+      
+
       },
 
        {
       name:"paladin",
       maxHp: 100,
-      hp: 20,
+      hp: 100,
       shield: 0,
       armor: 0,
       hitbox: 1,
@@ -127,22 +192,50 @@ var characterClasses = [
         },
         description: "At the start of a fight, you heal 10 health"
       },
-      perk:0,
-      startOfFight: [],
-      everyThird:
-       [
+      perk:[
         {
-            name: "Smite",
-            dmg: 8,
-            heal: 3,
-            shield: 0,
-            tag: function(){
-                return `<li>You smite your enemy dealing <span class='list-item-dmg'>${this.dmg} damage</span> and heal yourself for <span class='list-item-heal'>${this.heal} health</span></li>`;
+            effect: function(){
+                playerStats.everyThird.push( {
+                    name: "Smite",
+                    dmg: 8,
+                    heal: 3,
+                    shield: 0,
+                    tag: function(){
+                        return `<li>You smite your enemy dealing <span class='list-item-dmg'>${this.dmg} damage</span> and heal yourself for <span class='list-item-heal'>${this.heal} health</span></li>`;
+                    },
+                    
+                },
+        )
             },
-            
+            name: "Holy Smite",
+            description: "Every third attack you smite your enemy dealing 8 damage and healing yourself for 3 health",
         },
-      ]
-     , 
+        {
+            effect: function(){
+                playerStats.levelUp.crit += 3
+            },
+            name: "Crusade",
+            description: "Each level, you receive 3% critical chance increase",
+
+        },
+
+      ],
+      startOfFight: [],
+      everyThird: [], 
+      levelUp:
+        { 
+            dmg: 2,
+            hp: 3,
+            crit: 1,
+            shield:0,
+            armor:0,
+            skill: [
+
+            ],
+
+        },
+      
+
       }
       
 ]
@@ -219,13 +312,15 @@ var items = [
     {
         name: "Gorgon's Shield",
         description: "Grants 8 shield",
+        icon: "shield.png",
         effect : function(){
             playerStats.shield += 10
         },
     },
     {
-        name: "Brass Armor",
+        name: "Brass Helmet",
         description: "Grants 1 armor",
+        icon: "brass-helmet.png",
         effect : function(){
             playerStats.armor += 1
         },
@@ -233,6 +328,7 @@ var items = [
     {
         name: "Bottled Flame",
         description: "Deals 4 damage to enemy at the start of a fight",
+        icon: "bottle.png",
         effect : function(){
             playerStats.startOfFight.push(
                 {
@@ -256,12 +352,29 @@ var items = [
     {
         name: "Sword of Might",
         description: "Increases damage by 5",
+        icon: "sword-of-might.png",
         effect : function(){
             playerStats.dmg += 5
         },
     },
+
+    {
+        name: "Pointy Dagger",
+        description: "Increases critical chance by 8%",
+        icon: "pointy-dagger.png",
+        effect : function(){
+            playerStats.crit += 8
+        },
+    },
 ]
 ]
+
+for (let i = 0 ; i < items.length; i++)
+    {
+        items[i] = items[i].sort((x,y)=> Math.random() - .5)
+    }
+
+
 
 var enemyStats = {} 
 
@@ -269,7 +382,7 @@ var main = document.getElementById("main")
 
 var screen = document.getElementById("screen")
 
-var statusbar = document.getElementById("status-bar")
+var itemsBar = document.getElementById("items-bar")
 
 var combatLog = document.getElementById("combat-log")
 
@@ -277,7 +390,9 @@ var combatLogArr = []
 
 var statsBarPlayerClass = document.getElementById("player-class")
 
-var statsBarPlayerHp = document.getElementById("player-HP")
+var statsBarPlayerShield = document.getElementById("player-shield")
+
+var statsBarPlayerArmor = document.getElementById("player-armor")
 
 var statsBarPlayerLvl = document.getElementById("player-lvl")
 
@@ -309,7 +424,7 @@ var combatScreen = document.getElementById("combat-screen")
 
 var combatScreenEnemy = document.getElementById("combat-screen-enemy")
 
-var disableMove = false
+var disableMove = true
 
 function resolveTimer() {
     return new Promise((resolve) => {
@@ -324,6 +439,7 @@ function charSelect(x){
    var getId = x.getAttribute("id")
    
    playerStats = characterClasses[getId]
+
 
    playerStats.talent.effect()
 
@@ -383,9 +499,30 @@ function getLvl(){
        var lvlDiff = playerStats.lvl - currentLevel
        for (let i = 0; i < lvlDiff; i++)
         {   
-            playerStats.maxHp += 20
-            playerStats.hp += 20
-            playerStats.dmg += 4
+            playerStats.maxHp += playerStats.levelUp.hp
+
+            playerStats.hp += playerStats.levelUp.hp
+
+            playerStats.dmg += playerStats.levelUp.dmg
+
+            playerStats.crit += playerStats.levelUp.crit
+
+            playerStats.shield += playerStats.levelUp.shield
+
+            playerStats.armor += playerStats.levelUp.armor
+
+            for (let j = 0; j < 2; j++)
+                {
+                    var getPerk = playerStats.levelUp.skill.shift()
+                    console.log(getPerk);
+                    lvlUpScreen.innerHTML = lvlUpScreen.innerHTML + 
+                    `<div>
+                    <div>${getPerk.name}</div>
+                    <div>${getPerk.description}</div>
+                    </div>`
+
+                }
+
             
         }
 
@@ -882,13 +1019,15 @@ document.body.addEventListener('keydown', async function (event) {
 
                 })
 
-                if ( (Math.floor(Math.random() * 50)) < enemyStats.item)
-                    {  
-                        var randomItemGenerator = Math.floor(Math.random() * items[enemyStats.tier].length)
+                if ( (Math.floor(Math.random() * 100)) < enemyStats.item)
+                    {    
+                        
+                        
+                        var randomItemGenerator =  items[enemyStats.tier].pop()
 
                         combatLogArr.push({
 
-                            logMsg:`<li>item received: <span class='list-item-lvl'>${items[enemyStats.tier][randomItemGenerator].name}</span></li>`,
+                            logMsg:`<li>Item received: <span class='list-item-lvl'>${randomItemGenerator.name}</span></li>`,
         
                             playerHp: playerStats.hp,
         
@@ -899,10 +1038,9 @@ document.body.addEventListener('keydown', async function (event) {
                             enemyHp: enemyStats.hp,
         
                         })
-
-                        items[enemyStats.tier][randomItemGenerator].effect()
+                        
                        
-                    }
+                        }
 
                     
                 
@@ -954,7 +1092,7 @@ document.body.addEventListener('keydown', async function (event) {
 
             playerStats.hp = playerStats.hp - enemyDmgAfterArmor
 
-            var enemyLifestole = enemyDmgAfterArmor * (enemyStats.lifesteal / 100)
+            var enemyLifestole = Math.ceil(enemyDmgAfterArmor * (enemyStats.lifesteal / 100))
 
             enemyStats.hp += enemyLifestole
 
@@ -1067,6 +1205,20 @@ document.body.addEventListener('keydown', async function (event) {
                    
        
     }
+   
+        if (randomItemGenerator){
+
+           itemsBar.innerHTML = itemsBar.innerHTML += `<div class = 'items-bar-item' style='background-image:url("${randomItemGenerator.icon}")'
+                                                             name ='${randomItemGenerator.name}' onmouseover = 'showDescription(this)' onmouseout = 'hideDescription(this)'> </div>
+                                                             
+                                                             <div class = 'items-bar-item-description' id = '${randomItemGenerator.name}'>
+                                                             <div class = 'items-bar-name'>${randomItemGenerator.name}</div>
+                                                             <div class = 'items-bar-description'> ${randomItemGenerator.description}</div>
+                                                             </div>`
+
+            randomItemGenerator.effect()
+
+        }
         
         
         playerShieldBarAura.style.scale = "0"
@@ -1119,15 +1271,43 @@ intro.style.display = "none"
 }
 
 function chosePerk(x){
+
+    x.style.backgroundColor = "green"
+
+    disableMove = false
     
     playerStats.perk[x.getAttribute("perkOption")].effect()
 
     updateUi()
 
-    lvlUpScreen.innerHTML = ""
+    setTimeout(function(){
+
+        lvlUpScreen.innerHTML = ""
+
+    },  500)
     
     
    }
+
+ function showDescription(x){
+
+    var getDescriptionName = x.getAttribute("name")
+
+    var revealDescription = document.getElementById(getDescriptionName)
+
+    revealDescription.style.width = "unset"
+
+ }  
+
+ function hideDescription(x){
+
+    var getDescriptionName = x.getAttribute("name")
+
+    var revealDescription = document.getElementById(getDescriptionName)
+
+    revealDescription.style.width = "0"
+
+ } 
 
 function updateHp(){
 
@@ -1152,6 +1332,10 @@ function updateUi(){
     statsBarPlayerDmg.textContent = "Damage: " + playerStats.dmg
 
     statsBarPlayerCrit.textContent = "Crit chance: " + playerStats.crit +"%"
+
+    statsBarPlayerShield.textContent = "Shield: " + playerStats.shield 
+
+    statsBarPlayerArmor.textContent = "Armor: " + playerStats.armor
     
     }
 
