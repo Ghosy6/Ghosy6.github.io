@@ -46,7 +46,7 @@ var characterClasses = [
             armor:0,
             skill: [
                 {   name: "Apex",
-                    description: "Upgrades your talent. Your critical hit chance is increased by additional 7%",
+                    description: function(){ return "Upgrades your talent. Your critical hit chance is increased by additional 7%"},
                     effect: function(){
                         playerStats.crit += 7
                     },
@@ -54,26 +54,75 @@ var characterClasses = [
                 },
 
                 {   
-                    tier: 1,
-                    name: "Swordplay" + function(){return this.tier},
-                    description: "Increases damage by" + function(){return this.tier},
+                    name: "Swordplay 1",
+                    description: function(){return "Increases damage by 1"},
                     effect: function(){
-                        playerStats.dmg += this.tier
+                        playerStats.dmg += 1
                     },
                     upg: function(){
-                        tier++
-                        playerStats.levelUp.push(
+                        
+                        playerStats.levelUp.skill.push(
                             { 
-                                tier: function(){ return this.tier},
-                                name: "Swordplay" + function(){return this.tier},
-                                description: "Increases damage by" + function(){return this.tier},
+                                name: "Swordplay 2",
+                                description: function(){return "Increases damage by 2"},
                                 effect: function(){
-                                    playerStats.dmg += this.tier
+                                    playerStats.dmg += 2
                                 },
+                                upg: function(){
+
+                                    playerStats.levelUp.skill.push(
+                                        { 
+                                            name: "Swordplay 3",
+                                            description: function(){return "Increases damage by 3"},
+                                            effect: function(){
+                                                playerStats.dmg += 3
+                                            },
+                                            
+                                        }
+                                    )
+                                    
+                                }
                             }
                         )
                     }
                     
+                },
+                {   name: "Rest",
+                    description: function(){return "Recover 30 health points"},
+                    effect: function(){
+                        playerStats.hp += 30
+                        playerStats.hp > playerStats.maxHp ? playerStats.hp = playerStats.maxHp : null
+                    },
+                    
+                },
+
+                {   name: "Bulldozer",
+                    description: function(){return `Get one time bonus damage increase, 2% of your maximum health (${this.value()} damage)`},
+                    effect: function(){
+                       playerStats.dmg += Math.round(playerStats.maxHp * 0.02)
+                    },
+                    value: function(){return Math.round(playerStats.maxHp * 0.02)}
+
+                    
+                },
+                { name: "Ram",
+                    description: function(){return `At the start of a fight deal 8% of your max health to enemy`},
+                    effect: function(){
+                        
+                            playerStats.startOfFight.push({
+
+                                name: "Ram",
+                                dmg: function(){return Math.round(playerStats.maxHp * 0.08)},
+                                heal: function(){return 0},
+                                shield: function(){return 0},
+                                tag: function(){
+                                    return `<li>You Ram your enemy, dealing <span class='list-item-dmg'>${this.dmg()} damage</span></li>`;
+                                },
+                            }) 
+                        
+                    },
+                    
+
                 },
 
             ],
@@ -99,11 +148,11 @@ var characterClasses = [
         effect: function(){
             playerStats.startOfFight.push({
                 name: "Fireball",
-                dmg: 20,
-                heal: 0,
-                shield: 0,
+                dmg:  function(){return 20},
+                heal:  function(){return 0},
+                shield:  function(){return 0},
                 tag: function(){
-                    return `<li>You blast your enemy with Fireball for <span class='list-item-dmg'>${this.dmg} damage</span></li>`;
+                    return `<li>You blast your enemy with Fireball for <span class='list-item-dmg'>${this.dmg()} damage</span></li>`;
                 },
             },)
         },
@@ -114,11 +163,11 @@ var characterClasses = [
             effect: function(){
                 playerStats.startOfFight.push({
                     name: "Magic Shield",
-                    dmg: 0,
-                    heal: 0,
-                    shield: 17,
+                    dmg:  function(){return 0},
+                    heal:  function(){return 0},
+                    shield:  function(){return 17},
                     tag: function(){
-                        return `<li>You cast Magic Shield protecting you for <span class='list-item-shield'>${this.shield} damage</span></li>`;
+                        return `<li>You cast Magic Shield protecting you for <span class='list-item-shield'>${this.shield()} damage</span></li>`;
                     },
                     
                     
@@ -153,9 +202,79 @@ var characterClasses = [
             dmg: 1,
             hp: 3,
             crit: 0,
-            shield:2,
+            shield:0,
             armor:0,
             skill: [
+                {   
+                    name: "Apex",
+                    description: function(){ return `Upgrades your talent. Your Fireball deals 20 additional damage`},
+                    effect: function(){
+                        playerStats.startOfFight[0].dmg = function(){return 40}
+                        
+                    },
+                    
+                },
+
+                {   
+                    name: "Ice Shards",
+                    description: function(){ return "Every third attack, you cast an Ice Shard, dealing 15 damage"},
+                    effect: function(){
+                        playerStats.everyThird.push( {
+                            name: "Ice Shards",
+                            dmg:  function(){return 15},
+                            heal:  function(){return 0},
+                            shield:  function(){return 0},
+                            tag: function(){
+                                return `<li>Ice Shard deals <span class='list-item-dmg'>${this.dmg()} damage</span></li>`;
+                            },
+                            
+                        },
+                )
+                    },
+                    
+                },
+                {   
+                    name: "Insight",
+                    description: function(){ return `Increases exp gained by 10%`},
+                    effect: function(){
+
+                        enemyArray.map((x) =>{
+                            x.exp = Math.round(x.exp * 1.10)
+                        })
+                        
+                    },
+                    upg: function(){
+                        
+                        playerStats.levelUp.skill.push(
+                            { 
+                                name: "Insight 2",
+                                description: function(){ return `Increases exp gained by 15%`},
+                                effect: function(){
+                                    enemyArray.map((x) =>{
+                                        x.exp = Math.round(x.exp * 1.10)
+                                    })
+                                },
+                                upg: function(){
+
+                                    playerStats.levelUp.skill.push(
+                                        { 
+                                            name: "Insight 3",
+                                            description: function(){ return `Increases exp gained by 20%`},
+                                            effect: function(){
+                                                enemyArray.map((x) =>{
+                                                    x.exp = Math.round(x.exp * 1.10)
+                                                })
+                                            },
+                                            
+                                        }
+                                    )
+                                    
+                                }
+                            }
+                        )
+                    }
+                    
+                },
 
             ],
 
@@ -181,11 +300,11 @@ var characterClasses = [
         effect: function(){
             playerStats.startOfFight.push({
                 name: "Holy Light",
-                dmg: 0,
-                heal: 10,
-                shield: 0,
+                dmg:  function(){return 0},
+                heal:  function(){return 10},
+                shield:  function(){return 0},
                 tag: function(){
-                    return `<li>You cast holy light and recover <span class='list-item-heal'>${this.heal} health</span></li>`;
+                    return `<li>You cast holy light and recover <span class='list-item-heal'>${this.heal()} health</span></li>`;
                 },
                 
             },)
@@ -197,11 +316,11 @@ var characterClasses = [
             effect: function(){
                 playerStats.everyThird.push( {
                     name: "Smite",
-                    dmg: 8,
-                    heal: 3,
-                    shield: 0,
+                    dmg:  function(){return 8},
+                    heal:  function(){return 3},
+                    shield:  function(){return 0},
                     tag: function(){
-                        return `<li>You smite your enemy dealing <span class='list-item-dmg'>${this.dmg} damage</span> and heal yourself for <span class='list-item-heal'>${this.heal} health</span></li>`;
+                        return `<li>You smite your enemy dealing <span class='list-item-dmg'>${this.dmg()} damage</span> and heal yourself for <span class='list-item-heal'>${this.heal()} health</span></li>`;
                     },
                     
                 },
@@ -241,6 +360,8 @@ var characterClasses = [
 ]
 
 var playerStats = []
+
+var checkForLvlUp = []
 
 var enemyArray = [
     {
@@ -333,11 +454,11 @@ var items = [
             playerStats.startOfFight.push(
                 {
                     name: "Bottled Flame",
-                    dmg: 4,
-                    heal: 0,
-                    shield: 0,
+                    dmg:  function(){return 4},
+                    heal:  function(){return 0},
+                    shield:  function(){return 0},
                     tag: function(){
-                        return `<li>You throw a flaming bottle at the enemy, dealing <span class='list-item-dmg'>${this.dmg} damage</span></li>`;
+                        return `<li>You throw a flaming bottle at the enemy, dealing <span class='list-item-dmg'>${this.dmg()} damage</span></li>`;
                     },
                 },
             )
@@ -430,7 +551,7 @@ function resolveTimer() {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve('resolved');
-      },500);
+      },700);
     });
   }
 
@@ -440,27 +561,21 @@ function charSelect(x){
    
    playerStats = characterClasses[getId]
 
-
    playerStats.talent.effect()
 
    for (let j = 0; j < playerStats.perk.length; j++){
 
     
-    var perkOption = document.createElement("div")
-    
-    perkOption.classList.add("lvl-up-screen-item")
-    
-    perkOption.setAttribute("perkOption", j)
-    
-    perkOption.setAttribute("onclick","chosePerk(this)")
-    
-    perkOption.textContent = playerStats.perk[j].description
-    
-    lvlUpScreen.appendChild(perkOption)
+    lvlUpScreen.innerHTML = lvlUpScreen.innerHTML +
+    `<div class = 'lvl-up-screen-item' onclick = "chosePerk(this)" perkOption = "${j}" '>
+      <div class = 'lvl-up-screen-item-name'>${playerStats.perk[j].name}</div>
+      <div class = 'lvl-up-screen-item-description'>${playerStats.perk[j].description}</div>
+     </div>`
 
    }
-
-
+   
+    playerStats.levelUp.skill = playerStats.levelUp.skill.sort((x,y)=> Math.random() - .5)
+   
 
    document.documentElement.style.setProperty('--charClass', `url("${characterClasses[getId].name}.png")` );
     
@@ -487,16 +602,18 @@ function charSelect(x){
 
 updateUi()
 
+
+
 function getLvl(){
+
     var currentLevel = playerStats.lvl
     
-    if (playerStats.exp >= 45 && playerStats.exp < 75 ) {playerStats.lvl = 2 }
-    if (playerStats.exp >= 75 && playerStats.exp < 120 ) {playerStats.lvl = 3 }
-    if (playerStats.exp >= 120 && playerStats.exp < 300 ) {playerStats.lvl = 4 }
-    
+    playerStats.lvl = lvlUpArray.filter((x) => x < playerStats.exp).length    
         
     if (currentLevel < playerStats.lvl ) {
+
        var lvlDiff = playerStats.lvl - currentLevel
+       
        for (let i = 0; i < lvlDiff; i++)
         {   
             playerStats.maxHp += playerStats.levelUp.hp
@@ -511,27 +628,44 @@ function getLvl(){
 
             playerStats.armor += playerStats.levelUp.armor
 
-            for (let j = 0; j < 2; j++)
-                {
-                    var getPerk = playerStats.levelUp.skill.shift()
-                    console.log(getPerk);
-                    lvlUpScreen.innerHTML = lvlUpScreen.innerHTML + 
-                    `<div>
-                    <div>${getPerk.name}</div>
-                    <div>${getPerk.description}</div>
-                    </div>`
+            checkForLvlUp.push(currentLevel)
 
-                }
+           
 
+            }
             
-        }
+        
+            if ( lvlUpScreen.textContent == "")
+                {
+                    for (let j = 0; j < playerStats.levelUp.skill.length; j++)
+                    {
+                        var getSkill = playerStats.levelUp.skill[j]
+                        
+                        lvlUpScreen.innerHTML = lvlUpScreen.innerHTML + 
+                        `<div class = 'lvl-up-screen-item' onclick = "chosePerk(this)" skillOption = "${j}" '>
+                        <div class = 'lvl-up-screen-item-name'>${getSkill.name}</div>
+                        <div class = 'lvl-up-screen-item-description'>${getSkill.description()}</div>
+                       </div>`
+                        
+                       if (j == 1) {
+                        break
+                       }
+                    }
+                    
+                    let removeOneLvl = checkForLvlUp.shift()
+                }
+               
 
+           
+            
            combatLog.innerHTML = `<li class='list-item-lvl'>You have gained level ${playerStats.lvl}</li>` + combatLog.innerHTML
         
             updateUi()
+
+           
     }
 
-    
+   
 }
 
 getLvl()
@@ -878,13 +1012,13 @@ document.body.addEventListener('keydown', async function (event) {
             if ( checkForStartOfFight ) {
                 for (let i = 0; i < playerStats.startOfFight.length; i++)
                     {   
-                        playerCombatShield = playerCombatShield + playerStats.startOfFight[i].shield
+                        playerCombatShield = playerCombatShield + playerStats.startOfFight[i].shield()
 
-                        playerStats.hp = playerStats.hp + playerStats.startOfFight[i].heal
+                        playerStats.hp = playerStats.hp + playerStats.startOfFight[i].heal()
 
                         playerStats.hp > playerStats.maxHp ? playerStats.hp = playerStats.maxHp : null
                         
-                        enemyStats.hp =  enemyStats.hp - playerStats.startOfFight[i].dmg
+                        enemyStats.hp =  enemyStats.hp - playerStats.startOfFight[i].dmg()
                        
                         combatLogArr.push({
 
@@ -914,13 +1048,13 @@ document.body.addEventListener('keydown', async function (event) {
 
                 for (let i = 0; i < playerStats.everyThird.length; i++)
                     {
-                        playerCombatShield = playerCombatShield + playerStats.everyThird[i].shield
+                        playerCombatShield = playerCombatShield + playerStats.everyThird[i].shield()
 
-                        playerStats.hp = playerStats.hp + playerStats.everyThird[i].heal
+                        playerStats.hp = playerStats.hp + playerStats.everyThird[i].heal()
 
                         playerStats.hp > playerStats.maxHp ? playerStats.hp = playerStats.maxHp : null
                         
-                        enemyStats.hp =  enemyStats.hp - playerStats.everyThird[i].dmg
+                        enemyStats.hp =  enemyStats.hp - playerStats.everyThird[i].dmg()
                        
                         combatLogArr.push({
 
@@ -1276,13 +1410,55 @@ function chosePerk(x){
 
     disableMove = false
     
-    playerStats.perk[x.getAttribute("perkOption")].effect()
+    if (playerStats.perk.length > 0) 
+        {
+            playerStats.perk[x.getAttribute("perkOption")].effect()
+
+            playerStats.perk = []
+            
+            }
+
+     else 
+     {     
+            var receiveSkill = playerStats.levelUp.skill[x.getAttribute("skillOption")]
+
+            receiveSkill.effect()
+
+            playerStats.levelUp.skill = playerStats.levelUp.skill.filter(a => a.name != receiveSkill.name )
+
+            if ( receiveSkill.upg){
+                receiveSkill.upg()
+            }
+            
+            playerStats.levelUp.skill =  playerStats.levelUp.skill.sort((x,y)=> Math.random() - .5)
+
+           
+
+     }   
 
     updateUi()
 
     setTimeout(function(){
 
-        lvlUpScreen.innerHTML = ""
+         lvlUpScreen.innerHTML = ""
+
+       if (checkForLvlUp.length > 0) {
+
+        for (let j = 0; j < playerStats.levelUp.skill.length; j++)
+            {
+                var getSkill = playerStats.levelUp.skill[j]
+                
+                lvlUpScreen.innerHTML = lvlUpScreen.innerHTML + 
+                `<div class = 'lvl-up-screen-item' onclick = "chosePerk(this)" skillOption = "${j}" '>
+                <div class = 'lvl-up-screen-item-name'>${getSkill.name}</div>
+                <div class = 'lvl-up-screen-item-description'>${getSkill.description()}</div>
+                </div>`
+
+            }
+
+            let removeOneLvl = checkForLvlUp.shift()
+       }
+
 
     },  500)
     
@@ -1354,5 +1530,6 @@ var neighbourArr = [
      [-2,3],[-1,3],[0,3],[1,3],[2,3],[-1,4],[0,4],[1,4]]
 ]
 
-var enemyLocationArray = [ "17-17","79-36","74-55", "56-77", "8-30", "15-60", "60-15", "35-82", "40-40" ]
+var enemyLocationArray = [ "17-17","79-36","74-55", "56-77", "8-30", "15-60", "60-15", "35-82", "40-40","49-49","55-60" ]
 
+var lvlUpArray = [45,75,120,200,300,500]

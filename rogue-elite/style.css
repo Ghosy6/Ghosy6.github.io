@@ -166,6 +166,7 @@
 
 .lvl-up-screen-item {
     display: flex;
+    flex-direction: column;
     color: white;
     font-size: 1.2rem;
     cursor: pointer;
@@ -174,12 +175,29 @@
     height: 80%;
     align-items: center;
     text-align: center;
-    
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    justify-content: center;
 }
 
 .lvl-up-screen-item:hover{
     scale: 1.07;
 }
+
+.lvl-up-screen-item-name {
+
+    color: gold;
+    font-size: 1.2rem;
+    flex: 1;
+}
+
+.lvl-up-screen-item-description {
+
+    color: white;
+    font-size: 0.8rem;
+    flex: 1;
+}
+
+
 
 #hp-bar {
     display: flex;
