@@ -7,8 +7,10 @@ var characterClasses = [
       armor: 0,
       hitbox: 1,
       vievRange: 3,
-      dmg: 18, 
+      dmg: 10, 
       crit: 0,
+      critDmg: 0,
+      onCrit: [],
       exp: 0,
       lvl: 1,
       gold: 0,
@@ -41,7 +43,7 @@ var characterClasses = [
         { 
             dmg: 2,
             hp: 5,
-            crit: 1,
+            crit: 0,
             shield:0,
             armor:0,
             skill: [
@@ -93,6 +95,21 @@ var characterClasses = [
                         playerStats.hp += 30
                         playerStats.hp > playerStats.maxHp ? playerStats.hp = playerStats.maxHp : null
                     },
+                    upg: function(){
+
+                        playerStats.levelUp.skill.push(
+                            { 
+                                name: "Big Rest",
+                                description: function(){return "Recover 50 health points"},
+                                effect: function(){
+                                    playerStats.hp += 50
+                                    playerStats.hp > playerStats.maxHp ? playerStats.hp = playerStats.maxHp : null
+                                },
+                                
+                            }
+                        )
+                        
+                    }
                     
                 },
 
@@ -124,6 +141,75 @@ var characterClasses = [
                     
 
                 },
+                { name: "Bloodsurge",
+                    description: function(){return `You heal 20% damage done from critical hits`},
+                    effect: function(){
+                        
+                            playerStats.onCrit.push({
+
+                                effect: function(hp, dmg){
+                        
+                                   hp = hp + Math.round(dmg * 0.4)
+                        
+                                   hp > playerStats.maxHp ? hp = playerStats.maxHp : null
+                        
+                                   return hp
+                                    
+                                },
+                               
+                                tag: function(dmg){
+                                    return `<li>You recover <span class='list-item-heal'>${Math.round(dmg * 0.4)} </span>health from your critical hit</li>`;
+                                },
+                                
+                            }) 
+                        
+                    },
+                    
+
+                },
+
+                {   name: "Sharp Edge",
+                    description: function(){return "Your critical damage is increased by 10%"},
+                    effect: function(){
+
+                        playerStats.critDmg += 10
+        
+                    },
+                    upg: function(){
+
+                        playerStats.levelUp.skill.push(
+                            { 
+                                name: "Sharper Edge",
+                                description: function(){return "Your critical damage is increased by 15%"},
+                                effect: function(){
+                                    
+                                    playerStats.critDmg += 15
+
+                                },
+                                upg: function(){
+
+                                    playerStats.levelUp.skill.push(
+                                        { 
+                                            name: "Edge of Darkness",
+                                            description: function(){return "Your critical damage is increased by 20% and your hit chance is 100%"},
+                                            effect: function(){
+                                                
+                                                playerStats.critDmg += 20
+                                                enemyArray.map( (x) => x.evade = 0)
+                                                
+                                            },
+                                            
+                                        }
+                                    )
+                                    
+                                }
+                                
+                            }
+                        )
+                        
+                    }
+                    
+                },
 
             ],
 
@@ -141,6 +227,8 @@ var characterClasses = [
       vievRange: 3,
       dmg: 5, 
       crit: 0,
+      critDmg: 0,
+      onCrit:[],
       exp: 0,
       lvl: 1,
       gold: 0,
@@ -231,6 +319,28 @@ var characterClasses = [
                         },
                 )
                     },
+                    upg: function(){
+
+                       playerStats.levelUp.skill.push(
+                        {
+                            name: "Arcane Frenzy",
+                            description: function(){ return `Every third attack, you shield is increased by 2`},
+                            effect: function(){
+                                playerStats.everyThird.push( {
+                                    name: "Arcane Frenzy",
+                                    dmg:  function(){return 0},
+                                    heal:  function(){return 0},
+                                    shield:  function(){return 2},
+                                    tag: function(){
+                                        return `<li>Your shield is increased by <span class='list-item-shield'>${this.shield()} </span></li>`;
+                                    },
+                                    
+                                },
+                        )
+                            }
+                        }
+                       )
+                    },
                     
                 },
                 {   
@@ -292,7 +402,9 @@ var characterClasses = [
       hitbox: 1,
       vievRange: 3,
       dmg: 7, 
-      crit: 5,
+      crit: 0,
+      critDmg: 0,
+      onCrit:[],
       exp: 0,
       lvl: 1,
       gold: 0,
@@ -345,7 +457,7 @@ var characterClasses = [
         { 
             dmg: 2,
             hp: 3,
-            crit: 1,
+            crit: 2,
             shield:0,
             armor:0,
             skill: [
@@ -968,6 +1080,8 @@ document.body.addEventListener('keydown', async function (event) {
 
         var playerCombatCrit = playerStats.crit
 
+        var playerCombatCritDmg = playerStats.critDmg
+
         var playerCombatArmor = playerStats.armor
         
         var playerCombatExp = playerStats.exp
@@ -1042,7 +1156,7 @@ document.body.addEventListener('keydown', async function (event) {
                 
             }
 
-             maxShieldArr.push(playerCombatShield)
+             
 
              if (checkForEveryThird % 3 == 0){
 
@@ -1073,7 +1187,7 @@ document.body.addEventListener('keydown', async function (event) {
 
                 }
              }
-            
+             maxShieldArr.push(playerCombatShield)
 
             if (enemyStats.hp > 0){
 
@@ -1099,11 +1213,23 @@ document.body.addEventListener('keydown', async function (event) {
 
                     if (critCheck < playerCombatCrit){
 
-                        enemyStats.hp = enemyStats.hp - playerCombatDmg
+                        enemyStats.hp = enemyStats.hp - (playerCombatDmg * (2 + (playerCombatCritDmg / 100)))
+
+                        var checkForOncrit = ""
+
+                        for (j = 0; j < playerStats.onCrit.length; j++){
+                           
+                            playerStats.hp = playerStats.onCrit[j].effect(playerStats.hp, playerCombatDmg)
+
+                            checkForOncrit = playerStats.onCrit[j].tag(playerCombatDmg)
+
+                        }
+                        
+                       
                         
                         combatLogArr.push({
 
-                            logMsg:`<li>You crit for <span class='list-item-dmg'>${playerCombatDmg *2} damage</span></li>`,
+                            logMsg:`<li>You crit for <span class='list-item-dmg'>${(playerCombatDmg * (2 + (playerCombatCritDmg / 100)))} damage</span>${checkForOncrit}</li>`,
 
                             playerHp: playerStats.hp,
 
@@ -1117,20 +1243,26 @@ document.body.addEventListener('keydown', async function (event) {
                         })
                 
                         }
-                     enemyStats.hp = enemyStats.hp - playerCombatDmg
+                     
+                    else {
+                        enemyStats.hp = enemyStats.hp - playerCombatDmg
 
-                     critCheck < playerCombatCrit ? "" : combatLogArr.push({
+                        combatLogArr.push({
 
-                        logMsg:`<li>You have dealt <span class='list-item-dmg'> ${playerCombatDmg} damage</span> </li>`,
+                            logMsg:`<li>You have dealt <span class='list-item-dmg'> ${playerCombatDmg} damage</span> </li>`,
+    
+                            playerHp: playerStats.hp,
+    
+                            playerShield: playerCombatShield,
+    
+                            playerExp : "",
+                            
+                            enemyHp: enemyStats.hp
+                        })
 
-                        playerHp: playerStats.hp,
+                     }
 
-                        playerShield: playerCombatShield,
-
-                        playerExp : "",
-                        
-                        enemyHp: enemyStats.hp
-                    })
+                   
                 }
             }
 
@@ -1153,7 +1285,7 @@ document.body.addEventListener('keydown', async function (event) {
 
                 })
 
-                if ( (Math.floor(Math.random() * 100)) < enemyStats.item)
+                if ( (Math.floor(Math.random() * 100)) < enemyStats.item && items[enemyStats.tier].length )
                     {    
                         
                         
@@ -1327,7 +1459,8 @@ document.body.addEventListener('keydown', async function (event) {
                  playerShieldBar.style.width = `${playerCombatShield / (playerStats.maxHp /100)}%`
  
               
- 
+                  maxShieldArr = maxShieldArr.sort((x,y) => y-x)    
+
                  playerShieldBarAura.style.opacity = `${(playerCombatShield / (maxShieldArr[0]/100)) * 0.5}%`
 
             
@@ -1408,13 +1541,15 @@ function chosePerk(x){
 
     x.style.backgroundColor = "green"
 
-    disableMove = false
+    
     
     if (playerStats.perk.length > 0) 
         {
             playerStats.perk[x.getAttribute("perkOption")].effect()
 
             playerStats.perk = []
+
+            disableMove = false
             
             }
 
@@ -1453,6 +1588,10 @@ function chosePerk(x){
                 <div class = 'lvl-up-screen-item-name'>${getSkill.name}</div>
                 <div class = 'lvl-up-screen-item-description'>${getSkill.description()}</div>
                 </div>`
+
+                if (j == 1) {
+                    break
+                   }
 
             }
 
@@ -1532,4 +1671,4 @@ var neighbourArr = [
 
 var enemyLocationArray = [ "17-17","79-36","74-55", "56-77", "8-30", "15-60", "60-15", "35-82", "40-40","49-49","55-60" ]
 
-var lvlUpArray = [45,75,120,200,300,500]
+var lvlUpArray = [45,75,120,200,300,500,800,1000,1200,1500,2000]
