@@ -133,24 +133,78 @@
     background-color: black
 }
 
-#stats-bar {
+#side-bar-stats {
 
     display: flex;
+    flex-direction: row;
+    width: 100%;
+    
+    
+  
+}
+
+.side-bar-stats-items {
+
+    color: white;
+    flex: 1;
+    align-items: center;
+    border: 1px solid gold;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: bottom;
+    padding: 2px;
+    transition: 0.1s;
+}
+
+.side-bar-stats-items:hover {
+
+   scale: 1.005;
+}
+
+#stats-bar {
+
     flex-direction: column;
     width: 100%;
     height: 25%;
     justify-content: center;
+    align-items:center;
   
 }
 
 .stats-bar-item {
 
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 1rem;
     height: 10%;
-    width: 100%;
+    width: 95%;
     background: black;
-    color: yellow
+    color: yellow;
+
+}
+
+.stats-bar-item:nth-child(odd){
+    background-color: rgb(34, 32, 32);
+}
+
+.side-bar-stats-items-panel {
+
+    display: none;
+}
+
+#talent-perk-bar {
+    
+    color: white;
+}
+
+.side-bar-stats-items-panel-show {
+
+    display: flex;
+    width: 100%;
+    height: 25%;
+    
 }
 
 #lvl-up-screen {
@@ -360,7 +414,7 @@
     display: inline-block;
     padding: 0;
     margin: 0;
-   /* border: 1px solid grey; */
+    border: 1px solid grey; 
     box-sizing: border-box;
     background-color: black;
     border-radius: 5%;

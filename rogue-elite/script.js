@@ -6,13 +6,13 @@ var characterClasses = [
       shield: 0,
       armor: 0,
       hitbox: 1,
-      vievRange: 3,
+      viewRange: 3,
       dmg: 10, 
       crit: 0,
       critDmg: 0,
       onCrit: [],
       exp: 0,
-      lvl: 1,
+      lvl: 0,
       gold: 0,
       talent: {
         effect: function(){
@@ -39,6 +39,7 @@ var characterClasses = [
       ],
       startOfFight: [],
       everyThird: [],
+      endOfFight:[],
       levelUp: 
         { 
             dmg: 2,
@@ -224,13 +225,13 @@ var characterClasses = [
       shield: 0,
       armor: 0,
       hitbox: 1,
-      vievRange: 3,
+      viewRange: 3,
       dmg: 5, 
       crit: 0,
       critDmg: 0,
       onCrit:[],
       exp: 0,
-      lvl: 1,
+      lvl: 0,
       gold: 0,
       talent: {
         effect: function(){
@@ -285,6 +286,7 @@ var characterClasses = [
       ],
       startOfFight: [],
       everyThird: [],
+      endOfFight:[],
       levelUp: 
         { 
             dmg: 1,
@@ -345,7 +347,7 @@ var characterClasses = [
                 },
                 {   
                     name: "Insight",
-                    description: function(){ return `Increases exp gained by 10%`},
+                    description: function(){ return `Increases experience gained by 10%`},
                     effect: function(){
 
                         enemyArray.map((x) =>{
@@ -358,10 +360,10 @@ var characterClasses = [
                         playerStats.levelUp.skill.push(
                             { 
                                 name: "Insight 2",
-                                description: function(){ return `Increases exp gained by 15%`},
+                                description: function(){ return `Increases experience gained by 15%`},
                                 effect: function(){
                                     enemyArray.map((x) =>{
-                                        x.exp = Math.round(x.exp * 1.10)
+                                        x.exp = Math.round(x.exp * 1.15)
                                     })
                                 },
                                 upg: function(){
@@ -369,10 +371,10 @@ var characterClasses = [
                                     playerStats.levelUp.skill.push(
                                         { 
                                             name: "Insight 3",
-                                            description: function(){ return `Increases exp gained by 20%`},
+                                            description: function(){ return `Increases experience gained by 20%`},
                                             effect: function(){
                                                 enemyArray.map((x) =>{
-                                                    x.exp = Math.round(x.exp * 1.10)
+                                                    x.exp = Math.round(x.exp * 1.20)
                                                 })
                                             },
                                             
@@ -400,13 +402,13 @@ var characterClasses = [
       shield: 0,
       armor: 0,
       hitbox: 1,
-      vievRange: 3,
+      viewRange: 3,
       dmg: 7, 
       crit: 0,
       critDmg: 0,
       onCrit:[],
       exp: 0,
-      lvl: 1,
+      lvl: 0,
       gold: 0,
       talent: {
         effect: function(){
@@ -453,6 +455,7 @@ var characterClasses = [
       ],
       startOfFight: [],
       everyThird: [], 
+      endOfFight:[],
       levelUp:
         { 
             dmg: 2,
@@ -540,33 +543,44 @@ var enemyArray = [
     
 ]
 
+var bossArr = [
+    {
+        name:"demon",
+        tier: 1,
+        hitbox: 2,
+        hp: 250,
+        dmg: 22,
+        exp: 300,
+        evade: 0,
+        lifesteal: 0,
+        item: 100,
+        
+    },
+    
+
+
+]
+
 var items = [
   [  
     {
         name: "Gorgon's Shield",
-        description: "Grants 8 shield",
+        description: "Grants 7 shield",
         icon: "shield.png",
         effect : function(){
-            playerStats.shield += 10
+            playerStats.shield += 7
         },
     },
-    {
-        name: "Brass Helmet",
-        description: "Grants 1 armor",
-        icon: "brass-helmet.png",
-        effect : function(){
-            playerStats.armor += 1
-        },
-    },
+    
     {
         name: "Bottled Flame",
-        description: "Deals 4 damage to enemy at the start of a fight",
+        description: "Deals 6 damage to enemy at the start of a fight",
         icon: "bottle.png",
         effect : function(){
             playerStats.startOfFight.push(
                 {
                     name: "Bottled Flame",
-                    dmg:  function(){return 4},
+                    dmg:  function(){return 6},
                     heal:  function(){return 0},
                     shield:  function(){return 0},
                     tag: function(){
@@ -578,6 +592,74 @@ var items = [
             
         },
     },
+    {
+        name: "Shard",
+        description: "Increases damage by 1 and critical hit chance by 2",
+        icon: "shard.png",
+        effect : function(){
+            playerStats.dmg += 1
+            playerStats.crit += 2
+        },
+    },
+    {
+        name: "Lesser Gem of Knowledge",
+        description: "Increases experience gained by 5%",
+        icon: "gem.png",
+        effect: function(){
+
+            enemyArray.map((x) =>{
+                x.exp = Math.round(x.exp * 1.05)
+            })
+            items[1].push(
+                {
+                    name: "Gem of Knowledge",
+                    description: "Increases experience gained by 10%",
+                    icon: "gem2.png",
+                    effect: function(){
+            
+                        enemyArray.map((x) =>{
+                            x.exp = Math.round(x.exp * 1.10)
+                        })
+                        
+                        shuffleItems()
+                    },
+                }
+            )
+        },
+    },
+    {
+        name: "Vitality Shrooms",
+        description: "Increases max HP by 15",
+        icon: "shrooms.png",
+        effect : function(){
+            playerStats.maxHp += 15
+            playerStats.hp += 15
+
+            updateHp()
+        },
+    },
+    {
+        name: "Potion of Frenzy",
+        description: "Each slain enemy increases critical hit damage by 1% permanently",
+        icon: "potion.png",
+        effect : function(){
+
+           playerStats.endOfFight.push(
+            {
+                effect: function(){
+                    playerStats.critDmg += 1
+                },
+                tag: function(){
+                    return `<li>Critical damage increased by 1%</li>`
+                }
+            }
+           )
+            
+           
+        },
+    },
+    
+
 
 
 ],
@@ -599,15 +681,26 @@ var items = [
             playerStats.crit += 8
         },
     },
-]
-]
-
-for (let i = 0 ; i < items.length; i++)
     {
-        items[i] = items[i].sort((x,y)=> Math.random() - .5)
-    }
+        name: "Brass Helmet",
+        description: "Grants 1 armor",
+        icon: "brass-helmet.png",
+        effect : function(){
+            playerStats.armor += 1
+        },
+    },
+    
+]
+]
 
+function shuffleItems(){
+    for (let i = 0 ; i < items.length; i++)
+        {
+            items[i] = items[i].sort((x,y)=> Math.random() - .5)
+        }
+}
 
+shuffleItems()
 
 var enemyStats = {} 
 
@@ -634,6 +727,16 @@ var statsBarPlayerExp = document.getElementById("player-exp")
 var statsBarPlayerDmg = document.getElementById("player-dmg")
 
 var statsBarPlayerCrit = document.getElementById("player-crit")
+
+var statsBarPlayerCritDmg = document.getElementById("player-crit-dmg")
+
+var characterStats = document.getElementById("character-stats")
+
+var skills = document.getElementById("skills")
+
+var skillsBar = document.getElementById("skills-bar")
+
+var talentAndPerk = document.getElementById("talent-perk-bar")
 
 var lvlUpScreen = document.getElementById("lvl-up-screen")
 
@@ -663,7 +766,7 @@ function resolveTimer() {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve('resolved');
-      },700);
+      },300);
     });
   }
 
@@ -804,13 +907,15 @@ var player = document.getElementById("44-44")
 
 player.classList.add("player")
 
-player.style.opacity="1"
+player.style.opacity = "1"
 
-while (enemyLocationArray.length){
+while  ( enemyLocationArray.length) {
 
     var enemyId = enemyLocationArray.shift()
 
     var enemy = document.getElementById(enemyId)
+
+    enemy.style.backgroundColor="red"
 
     enemy.classList.add("enemy")
 
@@ -858,13 +963,13 @@ for (let i = 0; i < neighbourArr[playerStats.hitbox].length; i++){
 
 }
 
-for (let i = 0; i < neighbourArr[playerStats.vievRange].length; i++){
+for (let i = 0; i < neighbourArr[playerStats.viewRange].length; i++){
 
     var playerIDX = player.id.slice(0, player.id.indexOf("-"))
 
     var playerIDY = player.id.slice(player.id.indexOf("-") +1)
 
-    var neighbourCheck = (Number(playerIDX) + neighbourArr[playerStats.vievRange][i][0]) + "-" + (Number(playerIDY) + neighbourArr[playerStats.vievRange][i][1])
+    var neighbourCheck = (Number(playerIDX) + neighbourArr[playerStats.viewRange][i][0]) + "-" + (Number(playerIDY) + neighbourArr[playerStats.viewRange][i][1])
 
     
 
@@ -1001,13 +1106,13 @@ document.body.addEventListener('keydown', async function (event) {
 
         }
 
-        for (let i = 0; i < neighbourArr[playerStats.vievRange].length; i++){
+        for (let i = 0; i < neighbourArr[playerStats.viewRange].length; i++){
 
             var playerIDX = player.id.slice(0, player.id.indexOf("-"))
 
             var playerIDY = player.id.slice(player.id.indexOf("-") +1)
 
-            var neighbourCheck = (Number(playerIDX) + neighbourArr[playerStats.vievRange][i][0]) + "-" + (Number(playerIDY) + neighbourArr[playerStats.vievRange][i][1])
+            var neighbourCheck = (Number(playerIDX) + neighbourArr[playerStats.viewRange][i][0]) + "-" + (Number(playerIDY) + neighbourArr[playerStats.viewRange][i][1])
 
             
 
@@ -1213,7 +1318,7 @@ document.body.addEventListener('keydown', async function (event) {
 
                     if (critCheck < playerCombatCrit){
 
-                        enemyStats.hp = enemyStats.hp - (playerCombatDmg * (2 + (playerCombatCritDmg / 100)))
+                        enemyStats.hp = enemyStats.hp - Math.round(playerCombatDmg * (2 + (playerCombatCritDmg / 100)))
 
                         var checkForOncrit = ""
 
@@ -1229,7 +1334,7 @@ document.body.addEventListener('keydown', async function (event) {
                         
                         combatLogArr.push({
 
-                            logMsg:`<li>You crit for <span class='list-item-dmg'>${(playerCombatDmg * (2 + (playerCombatCritDmg / 100)))} damage</span>${checkForOncrit}</li>`,
+                            logMsg:`<li>You crit for <span class='list-item-dmg'>${Math.round(playerCombatDmg * (2 + (playerCombatCritDmg / 100)))} damage</span>${checkForOncrit}</li>`,
 
                             playerHp: playerStats.hp,
 
@@ -1284,8 +1389,27 @@ document.body.addEventListener('keydown', async function (event) {
                     enemyHp: enemyStats.hp,
 
                 })
+                
+                for (let i = 0; i < playerStats.endOfFight.length; i++)
+                {
+                    playerStats.endOfFight[i].effect()
 
-                if ( (Math.floor(Math.random() * 100)) < enemyStats.item && items[enemyStats.tier].length )
+                    combatLogArr.push({
+
+                        logMsg: playerStats.endOfFight[i].tag(),
+    
+                        playerHp: playerStats.hp,
+    
+                        playerShield: playerCombatShield,
+    
+                        playerExp : enemyStats.exp,
+                        
+                        enemyHp: enemyStats.hp,
+    
+                    })
+                }
+
+                if ( (Math.floor(Math.random() * 50)) < enemyStats.item && items[enemyStats.tier].length )
                     {    
                         
                         
@@ -1535,6 +1659,34 @@ main.style.display = "block"
 
 intro.style.display = "none"
 
+var boxItems = document.querySelectorAll(".boxItem")
+
+
+
+var text = document.createElement("div")
+
+text.setAttribute("id", "texttext")
+
+main.appendChild(text)
+
+var texttext = document.getElementById("texttext")
+
+boxItems.forEach((boxz) =>{
+    boxz.addEventListener("click", ()=>{
+
+    
+        var coord = boxz.getAttribute("id")
+
+        texttext.textContent += `'${coord}', `
+
+        boxz.style.backgroundColor ="yellow"
+      
+    })
+}
+
+   
+)
+
 }
 
 function chosePerk(x){
@@ -1546,6 +1698,8 @@ function chosePerk(x){
     if (playerStats.perk.length > 0) 
         {
             playerStats.perk[x.getAttribute("perkOption")].effect()
+
+             talentAndPerk.innerHTML = `<div>${ playerStats.perk[x.getAttribute("perkOption")].name}</div><div>${ playerStats.perk[x.getAttribute("perkOption")].description}</div>`
 
             playerStats.perk = []
 
@@ -1638,21 +1792,42 @@ function updateUi(){
 
     updateHp()
 
-    statsBarPlayerClass.textContent = "Class: " + playerStats.name.toUpperCase()
+    statsBarPlayerClass.textContent =  playerStats.name.toUpperCase()
 
-    statsBarPlayerExp.textContent = "Exp: " + playerStats.exp
+    statsBarPlayerExp.textContent = playerStats.exp
 
-    statsBarPlayerLvl.textContent = "Level: " + playerStats.lvl
+    statsBarPlayerLvl.textContent = playerStats.lvl
 
-    statsBarPlayerDmg.textContent = "Damage: " + playerStats.dmg
+    statsBarPlayerDmg.textContent = playerStats.dmg
 
-    statsBarPlayerCrit.textContent = "Crit chance: " + playerStats.crit +"%"
+    statsBarPlayerCrit.textContent = playerStats.crit +"%"
 
-    statsBarPlayerShield.textContent = "Shield: " + playerStats.shield 
+    statsBarPlayerCritDmg.textContent =  playerStats.critDmg +"%"
 
-    statsBarPlayerArmor.textContent = "Armor: " + playerStats.armor
+    statsBarPlayerShield.textContent =  playerStats.shield 
+
+    statsBarPlayerArmor.textContent = playerStats.armor
+
+    
     
     }
+
+function showStats(x){
+
+    var getKey = x.getAttribute("key")
+
+    var getStats = document.getElementById(getKey)
+
+    var getAllPanels = document.querySelectorAll(".side-bar-stats-items-panel")
+
+    getAllPanels.forEach(panel => {
+        panel.classList.remove('side-bar-stats-items-panel-show')
+    })
+
+    getStats.classList.add("side-bar-stats-items-panel-show")
+}
+
+
 
 var neighbourArr = [
     [],
@@ -1669,6 +1844,11 @@ var neighbourArr = [
      [-2,3],[-1,3],[0,3],[1,3],[2,3],[-1,4],[0,4],[1,4]]
 ]
 
-var enemyLocationArray = [ "17-17","79-36","74-55", "56-77", "8-30", "15-60", "60-15", "35-82", "40-40","49-49","55-60" ]
+var enemyLocationArray = [ '4-2', '27-4', '61-6', '83-6', '45-8', '8-13', '30-17', '55-19', '80-29', '80-19', '5-26', '21-27', '43-31', '68-33', '80-45', '60-43', '49-53', '27-47', '30-39', '6-39', '16-50', '16-37', '6-62', '22-61', '43-69', '79-63', '67-62', '80-74', '63-80', '49-81', '28-82', '10-83', '31-66', '13-70', '76-69', '57-69', '37-57', '67-19', '73-5', '42-17', '17-11', '6-50', '5-78', '80-82', '70-51' ]
+
+enemyLocationArray = enemyLocationArray.sort((x,y)=> Math.random() - .5)
+
 
 var lvlUpArray = [45,75,120,200,300,500,800,1000,1200,1500,2000]
+
+
